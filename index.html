@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="CloudAdmin Prep is an interactive Azure Administrator study tool built around AZ-104 concepts, practice questions, hands-on labs, and progress tracking."
+    />
+
+    <meta name="theme-color" content="#071426" />
+
+    <title>CloudAdmin Prep | AZ-104 Study Trainer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css?v=2.2.0" />
+  </head>
+
+  <body>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <main class="app-shell">
+      <!-- ==================================================
+             HEADER
+        =================================================== -->
+
+      <header class="site-header">
+        <button
+          id="brand-button"
+          class="brand"
+          type="button"
+          aria-label="Return to CloudAdmin Prep home"
+        >
+          <span class="brand-mark"> CA </span>
+
+          <span class="brand-copy">
+            <strong> CloudAdmin Prep </strong>
+
+            <small> Azure Administrator Study Trainer </small>
+          </span>
+        </button>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <button
+            class="nav-button active"
+            data-screen="home-screen"
+            type="button"
+          >
+            Home
+          </button>
+
+          <button class="nav-button" data-screen="study-screen" type="button">
+            Study
+          </button>
+
+          <button
+            class="nav-button"
+            data-screen="practice-screen"
+            type="button"
+          >
+            Practice
+          </button>
+
+          <button class="nav-button" data-screen="labs-screen" type="button">
+            Labs
+          </button>
+
+          <button class="nav-button" data-screen="weak-screen" type="button">
+            Weak Areas
+          </button>
+        </nav>
+
+        <div class="header-focus">
+          <span> Current focus </span>
+
+          <strong> AZ-104 </strong>
+        </div>
+      </header>
+
+      <!-- ==================================================
+             HOME SCREEN
+        =================================================== -->
+
+      <section id="home-screen" class="screen">
+        <section class="hero-section">
+          <div class="hero-copy">
+            <div class="eyebrow">AZ-104 Azure Administrator</div>
+
+            <h1>
+              Learn it.
+              <span> Quiz it. Build it. </span>
+            </h1>
+
+            <p>
+              Start from zero and build real AZ-104 administrator thinking with plain-English lessons, exam-style practice, and a built-in Azure Portal Simulator.
+            </p>
+
+            <div class="hero-actions">
+              <button
+                id="continue-learning-button"
+                class="primary-button"
+                type="button"
+              >
+                Continue Learning
+                <span> Pick up where you left off </span>
+              </button>
+
+              <button
+                id="quick-practice-button"
+                class="secondary-button"
+                type="button"
+              >
+                Start Practice
+              </button>
+            </div>
+          </div>
+
+          <aside class="progress-card">
+            <div class="card-heading">
+              <div>
+                <span class="section-kicker"> Your progress </span>
+
+                <h2>AZ-104 readiness</h2>
+              </div>
+
+              <span id="progress-status" class="status-badge">
+                Getting started
+              </span>
+            </div>
+
+            <div class="readiness-row">
+              <div
+                id="readiness-ring"
+                class="readiness-ring"
+                style="--progress: 0"
+              >
+                <div>
+                  <strong id="readiness-percent"> 0% </strong>
+
+                  <span> READY </span>
+                </div>
+              </div>
+
+              <div class="readiness-copy">
+                <small> Recommended next step </small>
+
+                <strong id="recommended-topic"> Azure Foundations </strong>
+
+                <p id="recommended-note">
+                  Start with the Azure basics that support the
+                  administrator-level material.
+                </p>
+              </div>
+            </div>
+
+            <div class="progress-stats">
+              <div>
+                <span> Questions </span>
+
+                <strong id="questions-answered"> 0 </strong>
+              </div>
+
+              <div>
+                <span> Accuracy </span>
+
+                <strong id="overall-accuracy"> 0% </strong>
+              </div>
+
+              <div>
+                <span> Lessons </span>
+
+                <strong id="topics-completed"> 0 / 36 </strong>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <!-- ==================================================
+                 STUDY PATH
+            =================================================== -->
+
+        <section class="home-section">
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker"> Choose your path </span>
+
+              <h2>What do you want to work on?</h2>
+            </div>
+
+            <p>
+              Start with the fundamentals if you need them, or jump directly
+              into AZ-104 material.
+            </p>
+          </div>
+
+          <div class="path-grid">
+            <button
+              class="path-card path-card-featured"
+              data-action="foundations"
+              type="button"
+            >
+              <span class="path-icon"> 01 </span>
+
+              <div>
+                <span class="path-label"> Start here </span>
+
+                <h3>Azure Foundations</h3>
+
+                <p>
+                  A short beginner foundation covering only the cloud, networking, resiliency, and Azure structure you need before AZ-104.
+                </p>
+
+                <strong> Start foundations → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="az104-study" type="button">
+              <span class="path-icon"> 02 </span>
+
+              <div>
+                <span class="path-label"> Main focus </span>
+
+                <h3>AZ-104 Study</h3>
+
+                <p>
+                  Work through every current AZ-104 objective in small, beginner-friendly lessons with exam traps and mental models.
+                </p>
+
+                <strong> View study topics → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="practice" type="button">
+              <span class="path-icon"> 03 </span>
+
+              <div>
+                <span class="path-label"> Test yourself </span>
+
+                <h3>Practice Questions</h3>
+
+                <p>
+                  Choose a topic, set the difficulty, and get explanations after
+                  every answer.
+                </p>
+
+                <strong> Build a practice set → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="exam" type="button">
+              <span class="path-icon"> 04 </span>
+
+              <div>
+                <span class="path-label"> Exam prep </span>
+
+                <h3>Exam Mode</h3>
+
+                <p>
+                  Work through longer Azure scenarios with less guidance and a
+                  more exam-like pace.
+                </p>
+
+                <strong> Try exam mode → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="labs" type="button">
+              <span class="path-icon"> 05 </span>
+
+              <div>
+                <span class="path-label"> Hands-on </span>
+
+                <h3>Mock Azure Labs</h3>
+
+                <p>
+                  Practice administrator tasks in a built-in Azure Portal Simulator. No Azure subscription or charges required.
+                </p>
+
+                <strong> View labs → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="weak" type="button">
+              <span class="path-icon"> 06 </span>
+
+              <div>
+                <span class="path-label"> Focus smarter </span>
+
+                <h3>Weak Areas</h3>
+
+                <p>
+                  See which topics are costing you the most questions and review
+                  them first.
+                </p>
+
+                <strong> Review weak areas → </strong>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================================================
+                 EXAM AREAS
+            =================================================== -->
+
+        <section class="home-section">
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker"> Current exam blueprint </span>
+
+              <h2>AZ-104 skill areas</h2>
+            </div>
+
+            <p>
+              Your practice will eventually adjust to these exam weights instead
+              of treating every topic equally.
+            </p>
+          </div>
+
+          <div class="exam-area-grid">
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Identity & Governance </span>
+
+                <strong> 20–25% </strong>
+              </div>
+
+              <p>
+                Entra ID, RBAC, subscriptions, resource groups, Policy, locks,
+                tags, and cost management.
+              </p>
+
+              <div class="mini-progress">
+                <span id="identity-progress" style="width: 0%"></span>
+              </div>
+            </article>
+
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Storage </span>
+
+                <strong> 15–20% </strong>
+              </div>
+
+              <p>
+                Storage accounts, Blob Storage, Azure Files, access, redundancy,
+                lifecycle, and recovery.
+              </p>
+
+              <div class="mini-progress">
+                <span id="storage-progress" style="width: 0%"></span>
+              </div>
+            </article>
+
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Compute </span>
+
+                <strong> 20–25% </strong>
+              </div>
+
+              <p>
+                Virtual machines, scale sets, App Service, containers, ARM
+                templates, and Bicep.
+              </p>
+
+              <div class="mini-progress">
+                <span id="compute-progress" style="width: 0%"></span>
+              </div>
+            </article>
+
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Virtual Networking </span>
+
+                <strong> 15–20% </strong>
+              </div>
+
+              <p>
+                VNets, subnets, peering, NSGs, routing, Bastion, private
+                endpoints, DNS, and load balancing.
+              </p>
+
+              <div class="mini-progress">
+                <span id="networking-progress" style="width: 0%"></span>
+              </div>
+            </article>
+
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Monitoring & Recovery </span>
+
+                <strong> 10–15% </strong>
+              </div>
+
+              <p>
+                Azure Monitor, logs, alerts, Network Watcher, backups, recovery,
+                and Site Recovery.
+              </p>
+
+              <div class="mini-progress">
+                <span id="monitoring-progress" style="width: 0%"></span>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================================================
+             STUDY SCREEN
+        =================================================== -->
+
+      <section id="study-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Study </span>
+
+            <h1>Learn the concept first.</h1>
+
+            <p>
+              Small lessons that explain the same AZ-104 concepts in plain English, show the exam clue, warn you about traps, and check understanding before moving on.
+            </p>
+          </div>
+        </div>
+
+        <div class="study-layout">
+          <aside class="topic-sidebar">
+            <div class="sidebar-heading">
+              <span> Study path </span>
+
+              <strong> Topics </strong>
+            </div>
+
+            <div id="study-topic-list" class="topic-list"></div>
+          </aside>
+
+          <article class="lesson-card">
+            <div class="lesson-meta">
+              <span id="lesson-domain" class="topic-badge">
+                Azure Foundations
+              </span>
+
+              <span id="lesson-progress-label"> Topic 1 of 6 </span>
+            </div>
+
+            <h2 id="lesson-title">Azure Foundations</h2>
+
+            <p id="lesson-summary" class="lesson-summary">
+              Start with the Azure concepts that make the administrator-level
+              material easier to understand.
+            </p>
+
+            <section class="lesson-section">
+              <h3>Break it down</h3>
+
+              <div id="lesson-points" class="lesson-points"></div>
+            </section>
+
+            <section class="lesson-example">
+              <span> Exam-style scenario </span>
+
+              <p id="lesson-example-text">
+                The example for this lesson will appear here.
+              </p>
+            </section>
+
+            <section class="remember-box">
+              <strong> Exam memory shortcut </strong>
+
+              <p id="lesson-remember">
+                Focus on understanding what each Azure service is responsible
+                for and when you would choose it.
+              </p>
+            </section>
+
+            <div class="lesson-actions">
+              <button
+                id="previous-lesson-button"
+                class="secondary-button"
+                type="button"
+              >
+                ← Previous
+              </button>
+
+              <button
+                id="lesson-check-button"
+                class="primary-button"
+                type="button"
+              >
+                Check What I Learned →
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ==================================================
+             PRACTICE SETUP SCREEN
+        =================================================== -->
+
+      <section id="practice-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Practice </span>
+
+            <h1>Build a practice set.</h1>
+
+            <p>
+              Choose what you want to work on. Practice mode explains each
+              answer. Exam mode gives you less help until the end.
+            </p>
+          </div>
+        </div>
+
+        <section class="practice-builder">
+          <div class="builder-section">
+            <div class="builder-section-heading">
+              <span> 01 </span>
+
+              <div>
+                <strong> Topic </strong>
+
+                <small> What do you want to practice? </small>
+              </div>
+            </div>
+
+            <div id="practice-topic-options" class="selection-grid">
+              <button
+                class="selection-card selected"
+                data-topic="mixed"
+                type="button"
+              >
+                <strong> Mixed AZ-104 </strong>
+
+                <small> Questions from all exam areas </small>
+              </button>
+
+              <button
+                class="selection-card"
+                data-topic="foundations"
+                type="button"
+              >
+                <strong> Foundations </strong>
+
+                <small> Azure basics before the deeper material </small>
+              </button>
+
+              <button
+                class="selection-card"
+                data-topic="identity"
+                type="button"
+              >
+                <strong> Identity & Governance </strong>
+
+                <small> Entra ID, RBAC, Policy, tags, locks </small>
+              </button>
+
+              <button class="selection-card" data-topic="storage" type="button">
+                <strong> Storage </strong>
+
+                <small> Accounts, blobs, files, access, redundancy </small>
+              </button>
+
+              <button class="selection-card" data-topic="compute" type="button">
+                <strong> Compute </strong>
+
+                <small> VMs, App Service, containers, templates </small>
+              </button>
+
+              <button
+                class="selection-card"
+                data-topic="networking"
+                type="button"
+              >
+                <strong> Networking </strong>
+
+                <small> VNets, NSGs, routes, DNS, load balancing </small>
+              </button>
+
+              <button
+                class="selection-card"
+                data-topic="monitoring"
+                type="button"
+              >
+                <strong> Monitoring & Recovery </strong>
+
+                <small> Monitor, alerts, backup, Site Recovery </small>
+              </button>
+            </div>
+          </div>
+
+          <div class="builder-row">
+            <div class="builder-section">
+              <div class="builder-section-heading">
+                <span> 02 </span>
+
+                <div>
+                  <strong> Mode </strong>
+
+                  <small> Choose how you want to study </small>
+                </div>
+              </div>
+
+              <div id="practice-mode-options" class="stacked-options">
+                <button
+                  class="mode-option selected"
+                  data-mode="practice"
+                  type="button"
+                >
+                  <span>
+                    <strong> Practice </strong>
+
+                    <small> No timer. Explanation after each answer. </small>
+                  </span>
+
+                  <b> Learn </b>
+                </button>
+
+                <button class="mode-option" data-mode="exam" type="button">
+                  <span>
+                    <strong> Exam </strong>
+
+                    <small> Timed questions with review at the end. </small>
+                  </span>
+
+                  <b> Test </b>
+                </button>
+              </div>
+            </div>
+
+            <div class="builder-section">
+              <div class="builder-section-heading">
+                <span> 03 </span>
+
+                <div>
+                  <strong> Questions </strong>
+
+                  <small> Choose your session length </small>
+                </div>
+              </div>
+
+              <div id="question-count-options" class="count-options">
+                <button data-count="5" type="button">5</button>
+                <button class="selected" data-count="10" type="button">10</button>
+                <button data-count="15" type="button">15</button>
+                <button data-count="50" type="button">50</button>
+              </div>
+
+              <div class="start-practice-card">
+                <span> Your session </span>
+
+                <strong id="practice-summary">
+                  10 Mixed AZ-104 · Practice
+                </strong>
+
+                <button
+                  id="start-practice-button"
+                  class="primary-button"
+                  type="button"
+                >
+                  Start Practice →
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==================================================
+             QUIZ SCREEN
+        =================================================== -->
+
+      <section id="quiz-screen" class="screen hide">
+        <div class="quiz-shell">
+          <div class="quiz-topbar">
+            <div class="quiz-badges">
+              <span id="quiz-topic" class="topic-badge"> Mixed AZ-104 </span>
+
+              <span id="quiz-mode" class="topic-badge muted"> Practice </span>
+            </div>
+
+            <button id="quit-quiz-button" class="text-button" type="button">
+              End session
+            </button>
+          </div>
+
+          <div class="quiz-status">
+            <div>
+              <span> Question </span>
+
+              <strong id="question-count"> 1 / 10 </strong>
+            </div>
+
+            <div>
+              <span> Correct </span>
+
+              <strong id="live-correct"> 0 </strong>
+            </div>
+
+            <div>
+              <span> Accuracy </span>
+
+              <strong id="live-accuracy"> 0% </strong>
+            </div>
+
+            <div id="timer-card" class="timer-card hide">
+              <span> Time </span>
+
+              <strong id="timer"> 60 </strong>
+            </div>
+          </div>
+
+          <div class="progress-block">
+            <div>
+              <span> Session progress </span>
+
+              <span id="quiz-progress-label"> 10% </span>
+            </div>
+
+            <div class="progress-track">
+              <div id="quiz-progress-bar" class="progress-bar"></div>
+            </div>
+          </div>
+
+          <article class="question-card">
+            <div class="question-heading">
+              <span id="question-number"> 01 </span>
+
+              <div>
+                <p id="question-overline">AZURE FOUNDATIONS · FUNDAMENTAL</p>
+
+                <h2 id="question-text">Question text</h2>
+              </div>
+            </div>
+
+            <div id="answer-options" class="answer-grid"></div>
+
+            <div id="answer-feedback" class="feedback-panel hide">
+              <div id="feedback-icon" class="feedback-icon">✓</div>
+
+              <div>
+                <strong id="feedback-title"> That's it. </strong>
+
+                <p id="feedback-text"></p>
+              </div>
+            </div>
+
+            <div class="question-footer">
+              <span> Keyboard: press 1–4 to answer </span>
+
+              <button
+                id="next-question-button"
+                class="primary-button"
+                type="button"
+                disabled
+              >
+                Next Question →
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ==================================================
+             RESULTS SCREEN
+        =================================================== -->
+
+      <section id="results-screen" class="screen hide">
+        <article class="results-card">
+          <div class="results-heading">
+            <span class="section-kicker"> Session complete </span>
+
+            <h1 id="results-title">Good start.</h1>
+
+            <p id="results-message">Review what you missed before moving on.</p>
+          </div>
+
+          <div class="results-score">
+            <span> Accuracy </span>
+
+            <strong id="results-accuracy"> 0% </strong>
+
+            <small id="results-correct"> 0 of 10 correct </small>
+          </div>
+
+          <div class="results-stats">
+            <div>
+              <span> Topic </span>
+
+              <strong id="results-topic"> Mixed AZ-104 </strong>
+            </div>
+
+            <div>
+              <span> Mode </span>
+
+              <strong id="results-mode"> Practice </strong>
+            </div>
+
+            <div>
+              <span> Needs review </span>
+
+              <strong id="results-review-count"> 0 </strong>
+            </div>
+          </div>
+
+          <section id="missed-review-card" class="missed-review-card hide">
+            <button
+              id="missed-review-toggle"
+              class="review-toggle"
+              type="button"
+              aria-expanded="false"
+            >
+              <span>
+                <strong> Review missed questions </strong>
+
+                <small id="missed-review-label"> 0 questions to review </small>
+              </span>
+
+              <b id="review-toggle-icon"> + </b>
+            </button>
+
+            <div id="missed-review-list" class="review-list hide"></div>
+          </section>
+
+          <div class="results-actions">
+            <button
+              id="practice-again-button"
+              class="primary-button"
+              type="button"
+            >
+              Practice Again
+            </button>
+
+            <button
+              id="study-weak-button"
+              class="secondary-button"
+              type="button"
+            >
+              Study Weak Areas
+            </button>
+
+            <button id="results-home-button" class="ghost-button" type="button">
+              Back Home
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- ==================================================
+             LABS SCREEN
+        =================================================== -->
+
+      <section id="labs-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Azure Portal Simulator </span>
+
+            <h1>Practice it without leaving the app.</h1>
+
+            <p>
+              These are interactive local simulations. Configure the mock Azure portal, get coached on mistakes, then pass the lab quiz. You do not need an Azure account.
+            </p>
+          </div>
+        </div>
+
+        <div id="lab-list" class="lab-grid"></div>
+      </section>
+
+      <!-- ==================================================
+             WEAK AREAS SCREEN
+        =================================================== -->
+
+      <section id="weak-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Weak Areas </span>
+
+            <h1>Spend your time where it matters.</h1>
+
+            <p>
+              This section uses your question history to identify both weak exam domains and the specific subtopics that need another pass.
+            </p>
+          </div>
+        </div>
+
+        <section class="weak-summary-card">
+          <div>
+            <span> Current priority </span>
+
+            <h2 id="weakest-topic">Complete a practice session first</h2>
+
+            <p id="weakest-topic-note">
+              Once you answer some questions, your weakest exam area will appear
+              here.
+            </p>
+          </div>
+
+          <button
+            id="practice-weak-area-button"
+            class="primary-button"
+            type="button"
+            disabled
+          >
+            Practice This Area
+          </button>
+        </section>
+
+        <div id="weak-area-list" class="weak-area-list"></div>
+      </section>
+
+      <!-- ==================================================
+             FOOTER
+        =================================================== -->
+
+      <footer class="site-footer">
+        <p>Built by Letherius Miller · CloudAdmin Prep</p>
+
+        <p>
+          Independent Azure certification study tool aligned to the Microsoft AZ-104 skills measured as of April 17, 2026. Not affiliated with Microsoft.
+        </p>
+
+        <a
+          href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View the current AZ-104 exam study guide
+        </a>
+      </footer>
+    </main>
+
+    <script src="script.js?v=2.0.0"></script>
+  </body>
+</html>
