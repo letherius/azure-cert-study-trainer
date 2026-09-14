@@ -23,7 +23,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css?v=2.2.0" />
+    <link rel="stylesheet" href="style.css?v=3.0.0" />
   </head>
 
   <body>
@@ -102,7 +102,9 @@
             </h1>
 
             <p>
-              Start from zero and build real AZ-104 administrator thinking with plain-English lessons, exam-style practice, and a built-in Azure Portal Simulator.
+              Start from zero and build real AZ-104 administrator thinking with
+              plain-English lessons, exam-style practice, and a built-in Azure
+              Portal Simulator.
             </p>
 
             <div class="hero-actions">
@@ -217,7 +219,9 @@
                 <h3>Azure Foundations</h3>
 
                 <p>
-                  A short beginner foundation covering only the cloud, networking, resiliency, and Azure structure you need before AZ-104.
+                  A short beginner foundation covering only the cloud,
+                  networking, resiliency, and Azure structure you need before
+                  AZ-104.
                 </p>
 
                 <strong> Start foundations → </strong>
@@ -233,7 +237,8 @@
                 <h3>AZ-104 Study</h3>
 
                 <p>
-                  Work through every current AZ-104 objective in small, beginner-friendly lessons with exam traps and mental models.
+                  Work through every current AZ-104 objective in small,
+                  beginner-friendly lessons with exam traps and mental models.
                 </p>
 
                 <strong> View study topics → </strong>
@@ -283,7 +288,8 @@
                 <h3>Mock Azure Labs</h3>
 
                 <p>
-                  Practice administrator tasks in a built-in Azure Portal Simulator. No Azure subscription or charges required.
+                  Practice administrator tasks in a built-in Azure Portal
+                  Simulator. No Azure subscription or charges required.
                 </p>
 
                 <strong> View labs → </strong>
@@ -428,7 +434,9 @@
             <h1>Learn the concept first.</h1>
 
             <p>
-              Small lessons that explain the same AZ-104 concepts in plain English, show the exam clue, warn you about traps, and check understanding before moving on.
+              Small lessons that explain the same AZ-104 concepts in plain
+              English, show the exam clue, warn you about traps, and check
+              understanding before moving on.
             </p>
           </div>
         </div>
@@ -450,6 +458,10 @@
                 Azure Foundations
               </span>
 
+              <span id="lesson-exam-level" class="topic-badge muted">
+                AZ-900 foundation
+              </span>
+
               <span id="lesson-progress-label"> Topic 1 of 6 </span>
             </div>
 
@@ -461,7 +473,7 @@
             </p>
 
             <section class="lesson-section">
-              <h3>Break it down</h3>
+              <h3>The full lesson</h3>
 
               <div id="lesson-points" class="lesson-points"></div>
             </section>
@@ -482,6 +494,16 @@
                 for and when you would choose it.
               </p>
             </section>
+
+            <section
+              id="lesson-knowledge-check"
+              class="knowledge-check-card"
+            ></section>
+
+            <section
+              id="lesson-related-lab"
+              class="related-lab-card hide"
+            ></section>
 
             <div class="lesson-actions">
               <button
@@ -651,7 +673,9 @@
 
               <div id="question-count-options" class="count-options">
                 <button data-count="5" type="button">5</button>
-                <button class="selected" data-count="10" type="button">10</button>
+                <button class="selected" data-count="10" type="button">
+                  10
+                </button>
                 <button data-count="15" type="button">15</button>
                 <button data-count="50" type="button">50</button>
               </div>
@@ -754,6 +778,8 @@
                 <p id="feedback-text"></p>
               </div>
             </div>
+
+            <div id="answer-breakdown" class="answer-breakdown hide"></div>
 
             <div class="question-footer">
               <span> Keyboard: press 1–4 to answer </span>
@@ -868,7 +894,9 @@
             <h1>Practice it without leaving the app.</h1>
 
             <p>
-              These are interactive local simulations. Configure the mock Azure portal, get coached on mistakes, then pass the lab quiz. You do not need an Azure account.
+              These are interactive local simulations. Configure the mock Azure
+              portal, get coached on mistakes, then pass the lab quiz. You do
+              not need an Azure account.
             </p>
           </div>
         </div>
@@ -888,7 +916,8 @@
             <h1>Spend your time where it matters.</h1>
 
             <p>
-              This section uses your question history to identify both weak exam domains and the specific subtopics that need another pass.
+              This section uses your question history to identify both weak exam
+              domains and the specific subtopics that need another pass.
             </p>
           </div>
         </div>
@@ -926,7 +955,9 @@
         <p>Built by Letherius Miller · CloudAdmin Prep</p>
 
         <p>
-          Independent Azure certification study tool aligned to the Microsoft AZ-104 skills measured as of April 17, 2026. Not affiliated with Microsoft.
+          Independent Azure certification study tool aligned to the Microsoft
+          AZ-104 skills measured as of April 17, 2026. Not affiliated with
+          Microsoft.
         </p>
 
         <a
@@ -939,6 +970,10 @@
       </footer>
     </main>
 
-    <script src="script.js?v=2.0.0"></script>
+    <script src="data/meta.js?v=3.0.0"></script>
+    <script src="data/lessons.js?v=3.0.0"></script>
+    <script src="data/questions.js?v=3.0.0"></script>
+    <script src="data/labs.js?v=3.0.0"></script>
+    <script src="app.js?v=3.0.0"></script>
   </body>
 </html>
