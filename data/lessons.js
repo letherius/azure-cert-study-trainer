@@ -30,7 +30,7 @@
                       feedback only (separate from data/questions.js)
    ========================================================= */
 
-const LESSONS = [
+const AZ104_TRACK_LESSONS = [
   // =========================================================
   // FOUNDATIONS (AZ-900 scaffolding for AZ-104)
   // =========================================================

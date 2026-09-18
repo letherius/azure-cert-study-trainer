@@ -9,7 +9,7 @@
    Nothing here creates real Azure resources or incurs charges.
    ========================================================= */
 
-const LABS = [
+const AZ104_TRACK_LABS = [
   {
     id: "lab-entra-user",
     topic: "identity",

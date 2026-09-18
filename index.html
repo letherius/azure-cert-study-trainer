@@ -7,12 +7,12 @@
 
     <meta
       name="description"
-      content="CloudAdmin Prep is an interactive Azure Administrator study tool built around AZ-104 concepts, practice questions, hands-on labs, and progress tracking."
+      content="CloudAdmin Prep is an interactive Cloud Engineer training system: networking fundamentals, Azure administration, automation, troubleshooting tickets, and AZ-104 exam preparation in one static app."
     />
 
     <meta name="theme-color" content="#071426" />
 
-    <title>CloudAdmin Prep | AZ-104 Study Trainer</title>
+    <title>CloudAdmin Prep | Cloud Engineer Trainer</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
 
@@ -23,7 +23,7 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css?v=3.0.0" />
+    <link rel="stylesheet" href="style.css?v=4.0.0" />
   </head>
 
   <body>
@@ -46,7 +46,7 @@
           <span class="brand-copy">
             <strong> CloudAdmin Prep </strong>
 
-            <small> Azure Administrator Study Trainer </small>
+            <small> Cloud Engineer Training System </small>
           </span>
         </button>
 
@@ -75,15 +75,23 @@
             Labs
           </button>
 
+          <button class="nav-button" data-screen="simulator-screen" type="button">
+            Simulator
+          </button>
+
           <button class="nav-button" data-screen="weak-screen" type="button">
             Weak Areas
+          </button>
+
+          <button class="nav-button" data-screen="journal-screen" type="button">
+            Journal
           </button>
         </nav>
 
         <div class="header-focus">
           <span> Current focus </span>
 
-          <strong> AZ-104 </strong>
+          <strong id="header-focus-label"> AZ-104 </strong>
         </div>
       </header>
 
@@ -94,17 +102,18 @@
       <section id="home-screen" class="screen">
         <section class="hero-section">
           <div class="hero-copy">
-            <div class="eyebrow">AZ-104 Azure Administrator</div>
+            <div class="eyebrow">Cloud Engineer · Azure Administrator · AZ-104</div>
 
             <h1>
               Learn it.
-              <span> Quiz it. Build it. </span>
+              <span> Troubleshoot it. Prove it. </span>
             </h1>
 
             <p>
-              Start from zero and build real AZ-104 administrator thinking with
-              plain-English lessons, exam-style practice, and a built-in Azure
-              Portal Simulator.
+              Start from zero networking knowledge and build real Cloud
+              Engineer thinking — fundamentals, Azure administration,
+              automation, and troubleshooting tickets — with AZ-104 exam
+              preparation built in throughout.
             </p>
 
             <div class="hero-actions">
@@ -208,20 +217,37 @@
           <div class="path-grid">
             <button
               class="path-card path-card-featured"
-              data-action="foundations"
+              data-action="netfund"
               type="button"
             >
               <span class="path-icon"> 01 </span>
 
               <div>
-                <span class="path-label"> Start here </span>
+                <span class="path-label"> Start here if new to networking </span>
+
+                <h3>Networking Fundamentals</h3>
+
+                <p>
+                  Learn LANs, IP addressing, subnetting, routing, firewalls, and
+                  VPNs from zero — the foundation every Azure networking topic
+                  builds on.
+                </p>
+
+                <strong> Start networking fundamentals → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="foundations" type="button">
+              <span class="path-icon"> 02 </span>
+
+              <div>
+                <span class="path-label"> Azure basics </span>
 
                 <h3>Azure Foundations</h3>
 
                 <p>
                   A short beginner foundation covering only the cloud,
-                  networking, resiliency, and Azure structure you need before
-                  AZ-104.
+                  resiliency, and Azure structure you need before AZ-104.
                 </p>
 
                 <strong> Start foundations → </strong>
@@ -229,7 +255,7 @@
             </button>
 
             <button class="path-card" data-action="az104-study" type="button">
-              <span class="path-icon"> 02 </span>
+              <span class="path-icon"> 03 </span>
 
               <div>
                 <span class="path-label"> Main focus </span>
@@ -246,7 +272,7 @@
             </button>
 
             <button class="path-card" data-action="practice" type="button">
-              <span class="path-icon"> 03 </span>
+              <span class="path-icon"> 04 </span>
 
               <div>
                 <span class="path-label"> Test yourself </span>
@@ -263,7 +289,7 @@
             </button>
 
             <button class="path-card" data-action="exam" type="button">
-              <span class="path-icon"> 04 </span>
+              <span class="path-icon"> 05 </span>
 
               <div>
                 <span class="path-label"> Exam prep </span>
@@ -280,7 +306,7 @@
             </button>
 
             <button class="path-card" data-action="labs" type="button">
-              <span class="path-icon"> 05 </span>
+              <span class="path-icon"> 06 </span>
 
               <div>
                 <span class="path-label"> Hands-on </span>
@@ -297,7 +323,7 @@
             </button>
 
             <button class="path-card" data-action="weak" type="button">
-              <span class="path-icon"> 06 </span>
+              <span class="path-icon"> 07 </span>
 
               <div>
                 <span class="path-label"> Focus smarter </span>
@@ -312,6 +338,95 @@
                 <strong> Review weak areas → </strong>
               </div>
             </button>
+
+            <button class="path-card" data-action="automation" type="button">
+              <span class="path-icon"> 08 </span>
+
+              <div>
+                <span class="path-label"> Beyond the exam </span>
+
+                <h3>Automation & IaC</h3>
+
+                <p>
+                  Just enough PowerShell, Azure CLI, Python, Terraform/Bicep,
+                  Git, and CI/CD to automate real infrastructure work.
+                </p>
+
+                <strong> Start automation & IaC → </strong>
+              </div>
+            </button>
+
+            <button class="path-card" data-action="simulator" type="button">
+              <span class="path-icon"> 09 </span>
+
+              <div>
+                <span class="path-label"> Prove it </span>
+
+                <h3>Cloud Engineer Work Simulator</h3>
+
+                <p>
+                  Work through realistic support tickets — evidence, decisions,
+                  and consequences — across Beginner to Advanced difficulty.
+                </p>
+
+                <strong> Open the work simulator → </strong>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================================================
+                 SKILL TRACK PROGRESS
+            =================================================== -->
+
+        <section class="home-section">
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker"> Beyond AZ-104 </span>
+
+              <h2>Cloud Engineer skill tracks</h2>
+            </div>
+
+            <p>
+              Real-world tracks that support AZ-104 but are not themselves
+              graded exam domains.
+            </p>
+          </div>
+
+          <div class="skill-track-grid">
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Networking Fundamentals </span>
+
+                <strong> Prerequisite </strong>
+              </div>
+
+              <p>
+                LANs, IP addressing, subnetting, routing, firewalls, and VPNs —
+                vendor-neutral, pre-Azure networking knowledge.
+              </p>
+
+              <div class="mini-progress">
+                <span id="netfund-progress" style="width: 0%"></span>
+              </div>
+            </article>
+
+            <article class="exam-area-card">
+              <div class="exam-area-top">
+                <span> Automation & IaC </span>
+
+                <strong> Real-world </strong>
+              </div>
+
+              <p>
+                PowerShell, Azure CLI, Python, Infrastructure as Code, Git, and
+                CI/CD for automating cloud infrastructure.
+              </p>
+
+              <div class="mini-progress">
+                <span id="automation-progress" style="width: 0%"></span>
+              </div>
+            </article>
           </div>
         </section>
 
@@ -618,6 +733,26 @@
 
                 <small> Monitor, alerts, backup, Site Recovery </small>
               </button>
+
+              <button
+                class="selection-card"
+                data-topic="netfund"
+                type="button"
+              >
+                <strong> Networking Fundamentals </strong>
+
+                <small> Subnetting, routing, ports, firewalls, VPNs </small>
+              </button>
+
+              <button
+                class="selection-card"
+                data-topic="automation"
+                type="button"
+              >
+                <strong> Automation & IaC </strong>
+
+                <small> PowerShell, CLI, Python, IaC, Git, CI/CD </small>
+              </button>
             </div>
           </div>
 
@@ -905,6 +1040,29 @@
       </section>
 
       <!-- ==================================================
+             WORK SIMULATOR SCREEN
+        =================================================== -->
+
+      <section id="simulator-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Cloud Engineer Work Simulator </span>
+
+            <h1>Work a real ticket, not a quiz question.</h1>
+
+            <p>
+              Each ticket gives you a scenario and known evidence, then walks
+              you through the same decisions a Cloud Engineer makes —
+              including why the wrong choices are tempting. No Azure account
+              needed; nothing here is a live environment.
+            </p>
+          </div>
+        </div>
+
+        <div id="ticket-list" class="ticket-list-shell"></div>
+      </section>
+
+      <!-- ==================================================
              WEAK AREAS SCREEN
         =================================================== -->
 
@@ -948,6 +1106,76 @@
       </section>
 
       <!-- ==================================================
+             CLOUD ENGINEER JOURNAL SCREEN
+        =================================================== -->
+
+      <section id="journal-screen" class="screen hide">
+        <div class="screen-heading">
+          <div>
+            <span class="section-kicker"> Cloud Engineer Journal </span>
+
+            <h1>Turn finished work into interview evidence.</h1>
+
+            <p>
+              After a lab or ticket that taught you something real, capture it
+              here. Entries are saved in your browser and can be copied as
+              Markdown to paste into a resume, portfolio, or interview notes.
+            </p>
+          </div>
+        </div>
+
+        <section class="journal-form-card">
+          <div class="builder-section-heading">
+            <span> New entry </span>
+
+            <div>
+              <strong> Cloud Engineer Task Journal </strong>
+
+              <small> Problem → Environment → Action → Validation → Lessons learned </small>
+            </div>
+          </div>
+
+          <form id="journal-form" class="journal-form">
+            <label>
+              <span>Title</span>
+              <input type="text" id="journal-title" placeholder="e.g. Configured hub-and-spoke VNet connectivity" required />
+            </label>
+
+            <label>
+              <span>Problem — what were you trying to accomplish?</span>
+              <textarea id="journal-problem" rows="2" required></textarea>
+            </label>
+
+            <label>
+              <span>Environment — what Azure resources were involved?</span>
+              <textarea id="journal-environment" rows="2" required></textarea>
+            </label>
+
+            <label>
+              <span>Action — what did you configure or troubleshoot?</span>
+              <textarea id="journal-action" rows="3" required></textarea>
+            </label>
+
+            <label>
+              <span>Validation — how did you prove it worked?</span>
+              <textarea id="journal-validation" rows="2" required></textarea>
+            </label>
+
+            <label>
+              <span>Lessons learned</span>
+              <textarea id="journal-lessons" rows="2" required></textarea>
+            </label>
+
+            <div class="journal-form-actions">
+              <button type="submit" class="primary-button">Save Entry →</button>
+            </div>
+          </form>
+        </section>
+
+        <div id="journal-entry-list" class="journal-entry-list"></div>
+      </section>
+
+      <!-- ==================================================
              FOOTER
         =================================================== -->
 
@@ -955,9 +1183,10 @@
         <p>Built by Letherius Miller · CloudAdmin Prep</p>
 
         <p>
-          Independent Azure certification study tool aligned to the Microsoft
-          AZ-104 skills measured as of April 17, 2026. Not affiliated with
-          Microsoft.
+          Independent Cloud Engineer training system covering networking
+          fundamentals, Azure administration, automation, and troubleshooting
+          — aligned to the Microsoft AZ-104 skills measured as of April 17,
+          2026. Not affiliated with Microsoft.
         </p>
 
         <a
@@ -970,10 +1199,18 @@
       </footer>
     </main>
 
-    <script src="data/meta.js?v=3.0.0"></script>
-    <script src="data/lessons.js?v=3.0.0"></script>
-    <script src="data/questions.js?v=3.0.0"></script>
-    <script src="data/labs.js?v=3.0.0"></script>
-    <script src="app.js?v=3.0.0"></script>
+    <script src="data/meta.js?v=4.0.0"></script>
+    <script src="data/networking-fundamentals-lessons.js?v=4.0.0"></script>
+    <script src="data/lessons.js?v=4.0.0"></script>
+    <script src="data/automation-lessons.js?v=4.0.0"></script>
+    <script src="data/networking-fundamentals-questions.js?v=4.0.0"></script>
+    <script src="data/questions.js?v=4.0.0"></script>
+    <script src="data/automation-questions.js?v=4.0.0"></script>
+    <script src="data/networking-fundamentals-labs.js?v=4.0.0"></script>
+    <script src="data/labs.js?v=4.0.0"></script>
+    <script src="data/automation-labs.js?v=4.0.0"></script>
+    <script src="data/index.js?v=4.0.0"></script>
+    <script src="data/tickets.js?v=4.0.0"></script>
+    <script src="app.js?v=4.0.0"></script>
   </body>
 </html>

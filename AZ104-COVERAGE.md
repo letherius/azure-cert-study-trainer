@@ -1,8 +1,10 @@
 # AZ-104 Curriculum Coverage
 
+> **Scope of this document:** CloudAdmin Prep is a full Cloud Engineer training system — see [`README.md`](README.md) for the complete picture, including the Networking Fundamentals track (`data/networking-fundamentals-lessons.js`), the Automation & IaC track (`data/automation-lessons.js`), and the Work Simulator (`data/tickets.js`). This file documents only the AZ-104-graded portion of the curriculum.
+
 This curriculum is aligned to the official Microsoft Learn study guide for Exam AZ-104: Microsoft Azure Administrator — **"Skills measured as of April 17, 2026"** (`learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104`), verified directly against that page during the v3 curriculum revamp. If Microsoft publishes a new skills outline, this file and the corresponding lessons in `data/lessons.js` should be revisited together.
 
-Every lesson lives in `data/lessons.js` and carries an `examLevel` of either `az900` (foundational scaffolding) or `az104` (a directly examinable objective). Every lesson can include real Azure Portal steps, Azure CLI commands, and Azure PowerShell cmdlets where an administrator would realistically use them — not for every lesson, only where the tool adds teaching value.
+Every lesson in `data/lessons.js` carries an `examLevel` of either `az900` (foundational scaffolding) or `az104` (a directly examinable objective). A third value, `career`, appears only in the Networking Fundamentals and Automation & IaC tracks (real-world Cloud Engineer knowledge intentionally beyond AZ-104's current measured scope) and never in this file's AZ-104 lessons. Every lesson can include real Azure Portal steps, Azure CLI commands, and Azure PowerShell cmdlets where an administrator would realistically use them — not for every lesson, only where the tool adds teaching value.
 
 ## Foundations — 6 lessons (`examLevel: az900`, except the last)
 

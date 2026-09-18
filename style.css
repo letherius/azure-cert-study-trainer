@@ -4127,3 +4127,456 @@ a {
   margin-top: 12px;
   background: rgba(0, 0, 0, 0.16);
 }
+
+/* =========================================================
+   CLOUDADMIN PREP v4.0 — CLOUD ENGINEER TRAINING SYSTEM
+   Skill-track home cards, diagrams, non-Azure lab chrome,
+   Work Simulator tickets, and the Cloud Engineer Journal.
+   ========================================================= */
+
+/* Home screen: Cloud Engineer skill tracks */
+
+.skill-track-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px;
+}
+
+/* Lesson diagram + Azure-connection cards */
+
+.diagram-card {
+  border-color: rgba(103, 175, 255, 0.22);
+}
+
+.network-diagram {
+  margin: 10px 0 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #050e18;
+  color: #9ad5ff;
+  font-family: "Consolas", "SFMono-Regular", Menlo, Monaco, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+.azure-connection-card {
+  border-color: rgba(68, 215, 232, 0.24);
+  background: rgba(68, 215, 232, 0.05);
+}
+
+.example-card p {
+  white-space: pre-line;
+}
+
+/* Non-Azure lab/workspace chrome (Networking Fundamentals + Automation labs) */
+
+.workspace-topbar {
+  background: #14213a;
+}
+
+.workspace-mark {
+  background: linear-gradient(145deg, var(--cyan), var(--blue-light) 60%, var(--blue));
+}
+
+.workspace-portal .fake-portal-nav strong {
+  color: #1b3a4a;
+}
+
+.workspace-portal .fake-portal-nav span.active {
+  color: #0a6b78;
+  background: #d7f3f5;
+}
+
+/* ---------------------------------------------------------
+   WORK SIMULATOR — TICKET LIST
+   --------------------------------------------------------- */
+
+.ticket-list-shell {
+  display: block;
+}
+
+.ticket-dashboard {
+  margin-bottom: 8px;
+}
+
+.ticket-difficulty-group {
+  margin-top: 26px;
+}
+
+.ticket-difficulty-group:first-of-type {
+  margin-top: 22px;
+}
+
+.ticket-difficulty-heading {
+  margin: 0 0 14px;
+  padding-left: 2px;
+  color: var(--cyan);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.ticket-card p {
+  min-height: 34px;
+}
+
+/* ---------------------------------------------------------
+   WORK SIMULATOR — TICKET WORKSPACE
+   --------------------------------------------------------- */
+
+.ticket-workspace-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.ticket-scenario-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ticket-evidence-card {
+  padding: 20px;
+  border: 1px solid rgba(245, 200, 91, 0.22);
+  border-radius: var(--radius-medium);
+  background: rgba(245, 200, 91, 0.045);
+}
+
+.ticket-evidence-card .teach-label {
+  color: var(--yellow);
+}
+
+.ticket-evidence-list {
+  display: grid;
+  gap: 9px;
+  margin: 12px 0 0;
+}
+
+.ticket-evidence-item {
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(7, 20, 34, 0.5);
+}
+
+.ticket-evidence-item dt {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ticket-evidence-item dd {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ticket-progress-track {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.ticket-progress-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ticket-progress-dot.done {
+  background: var(--green);
+}
+
+.ticket-progress-dot.current {
+  background: var(--blue-light);
+  box-shadow: 0 0 0 4px rgba(103, 175, 255, 0.18);
+}
+
+.ticket-step-card {
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  background: linear-gradient(145deg, rgba(14, 35, 57, 0.96), rgba(7, 21, 36, 0.95));
+  box-shadow: var(--shadow);
+}
+
+.ticket-step-card h2 {
+  margin: 8px 0 20px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.35;
+}
+
+.ticket-step-options {
+  display: grid;
+  gap: 10px;
+}
+
+.ticket-option {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text-main);
+  background: rgba(7, 21, 36, 0.68);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12.5px;
+  line-height: 1.55;
+  transition: transform 0.17s ease, border-color 0.17s ease, background 0.17s ease;
+}
+
+.ticket-option:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(103, 175, 255, 0.48);
+}
+
+.ticket-option.correct {
+  border-color: rgba(85, 217, 155, 0.55);
+  background: var(--green-soft);
+}
+
+.ticket-option.wrong {
+  border-color: rgba(255, 113, 128, 0.56);
+  background: var(--red-soft);
+}
+
+.ticket-option.dimmed {
+  opacity: 0.42;
+}
+
+.ticket-step-feedback {
+  margin-top: 18px;
+  padding: 15px;
+  border: 1px solid rgba(85, 217, 155, 0.26);
+  border-radius: 13px;
+  background: rgba(85, 217, 155, 0.075);
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ticket-step-feedback strong {
+  color: var(--text-main);
+}
+
+.ticket-step-feedback.wrong {
+  border-color: rgba(255, 113, 128, 0.25);
+  background: rgba(255, 113, 128, 0.065);
+}
+
+#ticket-continue-button {
+  margin-top: 20px;
+}
+
+.ticket-resolution-card {
+  padding: 28px;
+  border: 1px solid rgba(85, 217, 155, 0.28);
+  border-radius: var(--radius-large);
+  background: linear-gradient(145deg, rgba(85, 217, 155, 0.075), rgba(7, 22, 38, 0.94));
+  box-shadow: var(--shadow);
+}
+
+.ticket-resolution-card h2 {
+  margin: 8px 0 12px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(24px, 3.4vw, 30px);
+}
+
+.ticket-resolution-card > p {
+  margin: 0 0 20px;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.ticket-resolution-block {
+  margin-top: 18px;
+}
+
+.ticket-resolution-block ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ticket-skills-list {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticket-skill-chip {
+  padding: 7px 11px;
+  border: 1px solid rgba(103, 175, 255, 0.3);
+  border-radius: 999px;
+  color: var(--blue-light);
+  background: rgba(47, 140, 255, 0.08);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.ticket-journal-hint {
+  margin-top: 20px;
+  padding: 13px 15px;
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 10px 10px 0;
+  background: rgba(68, 215, 232, 0.05);
+  color: var(--text-soft);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------
+   CLOUD ENGINEER JOURNAL
+   --------------------------------------------------------- */
+
+.journal-form-card {
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  background: linear-gradient(145deg, rgba(14, 35, 57, 0.94), rgba(7, 22, 38, 0.92));
+  box-shadow: var(--shadow-soft);
+}
+
+.journal-form {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.journal-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.journal-form label span {
+  color: var(--text-soft);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.journal-form input,
+.journal-form textarea {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(7, 21, 36, 0.68);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.journal-form input:focus,
+.journal-form textarea:focus {
+  outline: none;
+  border-color: rgba(103, 175, 255, 0.55);
+}
+
+.journal-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.journal-entry-list {
+  margin-top: 22px;
+  display: grid;
+  gap: 14px;
+}
+
+.journal-empty-state {
+  padding: 20px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.journal-entry-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-medium);
+  background: rgba(9, 25, 42, 0.72);
+}
+
+.journal-entry-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.journal-entry-heading span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.journal-entry-heading strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-main);
+  font-size: 15px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.journal-entry-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.journal-entry-body {
+  margin: 16px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.journal-entry-body dt {
+  color: var(--cyan);
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.journal-entry-body dd {
+  margin: 3px 0 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .skill-track-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-evidence-item {
+    grid-template-columns: 1fr;
+  }
+
+  .journal-entry-heading {
+    flex-direction: column;
+  }
+}

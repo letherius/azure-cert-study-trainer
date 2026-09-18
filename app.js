@@ -2,21 +2,51 @@
    CLOUDADMIN PREP — APPLICATION LOGIC
    Pure application logic: rendering, navigation, progress
    tracking, and event wiring. Curriculum content lives in
-   data/meta.js, data/lessons.js, data/questions.js, and
-   data/labs.js, loaded before this file (see index.html) and
-   exposed as the globals LESSONS, QUESTIONS, LABS,
-   TOPIC_NAMES, EXAM_TOPICS, EXAM_WEIGHTS, EXAM_LEVELS.
+   data/meta.js and every data/*.js track file, merged by
+   data/index.js into the globals LESSONS, QUESTIONS, LABS
+   (plus data/tickets.js's TICKETS), loaded before this file
+   (see index.html) — alongside TOPIC_NAMES, EXAM_TOPICS,
+   EXAM_WEIGHTS, EXAM_LEVELS, TICKET_DIFFICULTIES.
+
+   Three content tracks share this app: Networking Fundamentals
+   ("netfund") and Automation & IaC ("automation") are real-world
+   Cloud Engineer tracks, not scored AZ-104 domains. The
+   "AZ-104 readiness" card on the home screen must only reflect
+   AZ-104-relevant activity (foundations + the 5 exam topics) —
+   see AZ104_SCOPE_TOPICS / AZ104_LESSONS / AZ104_LABS /
+   getAz104Stats() below — so adding these tracks never inflates
+   or dilutes the AZ-104 readiness number.
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("CloudAdmin Prep v3.0 loaded.");
+  console.log("CloudAdmin Prep v4.0 loaded.");
 
   const STORAGE_KEY = "cloudAdminPrepV2";
   const LEGACY_KEY = "cloudAdminPrepV1";
+  const JOURNAL_KEY = "cloudAdminPrepJournalV1";
+
+  // Scope used to keep the "AZ-104 readiness" card honest now that
+  // Networking Fundamentals and Automation & IaC exist alongside it.
+  const AZ104_SCOPE_TOPICS = new Set(["foundations", ...EXAM_TOPICS]);
+  const AZ104_LESSONS = LESSONS.filter((lesson) => AZ104_SCOPE_TOPICS.has(lesson.topic));
+  const AZ104_LABS = LABS.filter((lab) => AZ104_SCOPE_TOPICS.has(lab.topic));
+
+  function getAz104Stats() {
+    let answered = 0;
+    let correct = 0;
+    AZ104_SCOPE_TOPICS.forEach((topic) => {
+      const stats = progress.topicStats[topic];
+      if (stats) {
+        answered += stats.answered;
+        correct += stats.correct;
+      }
+    });
+    return { answered, correct };
+  }
 
   const emptyTopicStats = () =>
     Object.fromEntries(
-      ["foundations", ...EXAM_TOPICS].map((topic) => [
+      ["foundations", ...EXAM_TOPICS, "netfund", "automation"].map((topic) => [
         topic,
         { answered: 0, correct: 0 },
       ]),
@@ -32,7 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
     correctAnswers: 0,
     completedLessons: [],
     completedLabs: [],
-    lastStudyLesson: "foundation-hierarchy",
+    completedTickets: [],
+    lastStudyLesson: "netfund-what-is-a-network",
     topicStats: emptyTopicStats(),
     lessonStats: emptyLessonStats(),
     labScores: {},
@@ -62,6 +93,9 @@ document.addEventListener("DOMContentLoaded", () => {
             : [],
           completedLabs: Array.isArray(parsed.completedLabs)
             ? parsed.completedLabs
+            : [],
+          completedTickets: Array.isArray(parsed.completedTickets)
+            ? parsed.completedTickets
             : [],
         };
       }
@@ -123,6 +157,8 @@ document.addEventListener("DOMContentLoaded", () => {
     computeProgress: get("compute-progress"),
     networkingProgress: get("networking-progress"),
     monitoringProgress: get("monitoring-progress"),
+    netfundProgress: get("netfund-progress"),
+    automationProgress: get("automation-progress"),
     studyTopicList: get("study-topic-list"),
     lessonDomain: get("lesson-domain"),
     lessonExamLevel: get("lesson-exam-level"),
@@ -182,6 +218,15 @@ document.addEventListener("DOMContentLoaded", () => {
     practiceWeakAreaButton: get("practice-weak-area-button"),
     weakAreaList: get("weak-area-list"),
     toast: get("toast"),
+    ticketList: get("ticket-list"),
+    journalForm: get("journal-form"),
+    journalTitle: get("journal-title"),
+    journalProblem: get("journal-problem"),
+    journalEnvironment: get("journal-environment"),
+    journalAction: get("journal-action"),
+    journalValidation: get("journal-validation"),
+    journalLessons: get("journal-lessons"),
+    journalEntryList: get("journal-entry-list"),
   };
 
   const state = {
@@ -205,6 +250,10 @@ document.addEventListener("DOMContentLoaded", () => {
     labAttempts: 0,
     labConfigPassed: false,
     lastAccuracy: 0,
+    currentTicket: null,
+    ticketStepIndex: 0,
+    ticketStepAnswered: false,
+    ticketMistakes: 0,
   };
 
   function shuffle(array) {
@@ -229,7 +278,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getTopicQuestions(topic) {
     if (topic === "mixed") {
-      return QUESTIONS.filter((question) => question.topic !== "foundations");
+      // The weighted AZ-104 mixed exam/practice pool must stay scoped to the
+      // 5 graded exam domains — Networking Fundamentals and Automation & IaC
+      // questions are real-world content, not AZ-104 objectives.
+      return QUESTIONS.filter((question) => EXAM_TOPICS.includes(question.topic));
     }
     return QUESTIONS.filter((question) => question.topic === topic);
   }
@@ -258,15 +310,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getReadinessScore() {
-    const lessonPart = (progress.completedLessons.length / LESSONS.length) * 30;
-    const labPart = (progress.completedLabs.length / LABS.length) * 25;
-    const volumePart = (Math.min(progress.questionsAnswered, 120) / 120) * 20;
-    const accuracy = calculateAccuracy(
-      progress.correctAnswers,
-      progress.questionsAnswered,
-    );
-    const accuracyPart =
-      progress.questionsAnswered >= 10 ? (accuracy / 100) * 25 : 0;
+    // Scoped to AZ-104 content only — Networking Fundamentals and
+    // Automation & IaC activity must never inflate (or dilute) this number.
+    const az104CompletedLessons = progress.completedLessons.filter((id) =>
+      AZ104_SCOPE_TOPICS.has(LESSONS.find((lesson) => lesson.id === id)?.topic),
+    ).length;
+    const az104CompletedLabs = progress.completedLabs.filter((id) =>
+      AZ104_SCOPE_TOPICS.has(LABS.find((lab) => lab.id === id)?.topic),
+    ).length;
+    const az104Stats = getAz104Stats();
+
+    const lessonPart = (az104CompletedLessons / AZ104_LESSONS.length) * 30;
+    const labPart = (az104CompletedLabs / AZ104_LABS.length) * 25;
+    const volumePart = (Math.min(az104Stats.answered, 120) / 120) * 20;
+    const accuracy = calculateAccuracy(az104Stats.correct, az104Stats.answered);
+    const accuracyPart = az104Stats.answered >= 10 ? (accuracy / 100) * 25 : 0;
     return Math.min(
       100,
       Math.round(lessonPart + labPart + volumePart + accuracyPart),
@@ -345,10 +403,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateHomeProgress() {
-    const accuracy = calculateAccuracy(
-      progress.correctAnswers,
-      progress.questionsAnswered,
-    );
+    // "AZ-104 readiness" and its stats are scoped to AZ-104 content only —
+    // see the header comment on AZ104_SCOPE_TOPICS for why.
+    const az104Stats = getAz104Stats();
+    const accuracy = calculateAccuracy(az104Stats.correct, az104Stats.answered);
     const readiness = getReadinessScore();
     elements.readinessRing.style.setProperty("--progress", readiness);
     elements.readinessPercent.textContent = `${readiness}%`;
@@ -363,15 +421,19 @@ document.addEventListener("DOMContentLoaded", () => {
       elements.progressStatus.textContent = "Near exam-ready";
     else elements.progressStatus.textContent = "Strong study readiness";
 
-    elements.questionsAnswered.textContent = progress.questionsAnswered;
+    const az104CompletedLessons = progress.completedLessons.filter((id) =>
+      AZ104_SCOPE_TOPICS.has(LESSONS.find((lesson) => lesson.id === id)?.topic),
+    ).length;
+
+    elements.questionsAnswered.textContent = az104Stats.answered;
     elements.overallAccuracy.textContent = `${accuracy}%`;
-    elements.topicsCompleted.textContent = `${progress.completedLessons.length} / ${LESSONS.length}`;
+    elements.topicsCompleted.textContent = `${az104CompletedLessons} / ${AZ104_LESSONS.length}`;
 
     const recommended = getRecommendedLesson();
     elements.recommendedTopic.textContent = recommended.title;
     elements.recommendedNote.textContent =
-      progress.completedLessons.length === LESSONS.length
-        ? "All lessons are complete. Keep drilling weak subtopics and simulator labs. Readiness is a study-progress indicator, not a guaranteed exam score."
+      az104CompletedLessons === AZ104_LESSONS.length
+        ? "Every AZ-104 lesson is complete. Keep drilling weak subtopics, simulator labs, and the Work Simulator. Readiness is a study-progress indicator, not a guaranteed exam score."
         : recommended.summary;
 
     elements.identityProgress.style.width = `${getDomainMastery("identity")}%`;
@@ -379,6 +441,8 @@ document.addEventListener("DOMContentLoaded", () => {
     elements.computeProgress.style.width = `${getDomainMastery("compute")}%`;
     elements.networkingProgress.style.width = `${getDomainMastery("networking")}%`;
     elements.monitoringProgress.style.width = `${getDomainMastery("monitoring")}%`;
+    elements.netfundProgress.style.width = `${getDomainMastery("netfund")}%`;
+    elements.automationProgress.style.width = `${getDomainMastery("automation")}%`;
   }
 
   function renderStudyTopicList() {
@@ -502,6 +566,24 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`;
   }
 
+  function renderDiagram(diagram) {
+    if (!diagram) return "";
+    return `
+      <div class="lesson-teach-card diagram-card">
+        <span class="teach-label">Diagram</span>
+        <pre class="network-diagram">${escapeHtml(diagram)}</pre>
+      </div>`;
+  }
+
+  function renderAzureConnection(text) {
+    if (!text) return "";
+    return `
+      <div class="lesson-teach-card azure-connection-card">
+        <span class="teach-label">How this relates to Azure</span>
+        <p>${escapeHtml(text)}</p>
+      </div>`;
+  }
+
   function renderLesson() {
     const index = LESSONS.findIndex(
       (lesson) => lesson.id === state.currentStudyLesson,
@@ -544,6 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
           )
           .join("")}
       </div>
+      ${renderDiagram(lesson.diagram)}
       ${renderTerminology(lesson.terminology)}
       ${renderDistinctions(lesson.distinctions)}
       ${
@@ -554,12 +637,17 @@ document.addEventListener("DOMContentLoaded", () => {
              </div>`
           : ""
       }
+      ${renderAzureConnection(lesson.azureConnection)}
       ${renderPortalWalkthrough(lesson.portalSteps)}
       ${renderCommandBlock("Azure CLI", lesson.cli)}
       ${renderCommandBlock("Azure PowerShell", lesson.powershell)}
+      ${renderCommandBlock("Python", lesson.python)}
+      ${renderCommandBlock("YAML", lesson.yaml)}
+      ${renderCommandBlock("JSON", lesson.json)}
+      ${renderCommandBlock("Git", lesson.git)}
       ${renderListCard("exam-trap-card", "Common mistakes", lesson.commonMistakes)}
       <div class="exam-trap-card">
-        <span class="teach-label">Common exam traps</span>
+        <span class="teach-label">${lesson.examLevel === "career" ? "Things that trip people up" : "Common exam traps"}</span>
         <ul>${lesson.traps.map((trap) => `<li>${escapeHtml(trap)}</li>`).join("")}</ul>
       </div>
       ${renderListCard("exam-trap-card exam-tips-card", "AZ-104 exam tips", lesson.examTips)}
@@ -1215,6 +1303,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const lab = LABS.find((item) => item.id === state.currentLab);
     if (!lab) return;
 
+    const chromeHtml = lab.nonAzure
+      ? `
+        <div class="fake-portal-topbar workspace-topbar">
+          <div class="fake-azure-mark workspace-mark">W</div>
+          <strong>Network Design Workspace</strong>
+          <span>Vendor-neutral · no Azure resources</span>
+          <b>Simulator</b>
+        </div>`
+      : `
+        <div class="fake-portal-topbar">
+          <div class="fake-azure-mark">A</div>
+          <strong>Microsoft Azure</strong>
+          <span>CloudAdmin Training Tenant</span>
+          <b>Simulator</b>
+        </div>`;
+
+    const instructionText = lab.nonAzure
+      ? "Use only the mission requirements. Real troubleshooting rewards working the problem in order, not guessing."
+      : "Use only the mission requirements. AZ-104 often gives extra-looking choices to test whether you can identify the minimum correct configuration.";
+
     elements.labList.className = "lab-simulator-shell";
     elements.labList.innerHTML = `
       <div class="simulator-toolbar">
@@ -1223,36 +1331,31 @@ document.addEventListener("DOMContentLoaded", () => {
           <span>${lab.domain}</span>
           <strong>${lab.title}</strong>
         </div>
-        <span class="simulator-local-badge">LOCAL SIMULATION</span>
+        <span class="simulator-local-badge">${lab.nonAzure ? "NO AZURE REQUIRED" : "LOCAL SIMULATION"}</span>
       </div>
 
       <section class="mission-card">
-        <span class="section-kicker">Your admin mission</span>
+        <span class="section-kicker">${lab.nonAzure ? "Your mission" : "Your admin mission"}</span>
         <h2>${lab.title}</h2>
         <p>${lab.mission}</p>
       </section>
 
-      <section class="fake-portal">
-        <div class="fake-portal-topbar">
-          <div class="fake-azure-mark">A</div>
-          <strong>Microsoft Azure</strong>
-          <span>CloudAdmin Training Tenant</span>
-          <b>Simulator</b>
-        </div>
+      <section class="fake-portal ${lab.nonAzure ? "workspace-portal" : ""}">
+        ${chromeHtml}
 
         <div class="fake-portal-body">
           <aside class="fake-portal-nav">
-            <strong>Configuration</strong>
+            <strong>${lab.nonAzure ? "Decisions" : "Configuration"}</strong>
             <span class="active">Basics</span>
-            <span>Networking</span>
-            <span>Security</span>
+            <span>${lab.nonAzure ? "Reasoning" : "Networking"}</span>
+            <span>${lab.nonAzure ? "Checks" : "Security"}</span>
             <span>Review + create</span>
           </aside>
 
           <div class="fake-portal-content">
             <div class="fake-breadcrumb">Home › ${lab.domain} › ${lab.title}</div>
-            <h3>Configure the resource</h3>
-            <p class="portal-instruction">Use only the mission requirements. AZ-104 often gives extra-looking choices to test whether you can identify the minimum correct configuration.</p>
+            <h3>${lab.nonAzure ? "Work the problem" : "Configure the resource"}</h3>
+            <p class="portal-instruction">${instructionText}</p>
 
             <div class="sim-form">
               ${lab.fields
@@ -1502,6 +1605,302 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------------------------------------------------------
+  // CLOUD ENGINEER WORK SIMULATOR (TICKETS)
+  // ---------------------------------------------------------
+
+  function renderTicketList() {
+    state.currentTicket = null;
+    elements.ticketList.className = "ticket-list-shell";
+
+    const completed = progress.completedTickets.length;
+    const byDifficulty = TICKET_DIFFICULTIES.map((difficulty) => ({
+      difficulty,
+      tickets: TICKETS.filter((ticket) => ticket.difficulty === difficulty),
+    }));
+
+    elements.ticketList.innerHTML = `
+      <section class="lab-dashboard ticket-dashboard">
+        <div>
+          <span class="section-kicker">Work Simulator</span>
+          <h2>${completed} of ${TICKETS.length} tickets worked</h2>
+          <p>Each ticket gives you a scenario, known evidence, and a sequence of real decisions — with feedback on every choice, right or wrong. Nothing here is a live Azure environment.</p>
+        </div>
+        <div class="lab-dashboard-score">
+          <strong>${Math.round((completed / TICKETS.length) * 100)}%</strong>
+          <span>SIMULATOR PROGRESS</span>
+        </div>
+      </section>
+
+      ${byDifficulty
+        .map(
+          (group) => `
+            <div class="ticket-difficulty-group">
+              <h3 class="ticket-difficulty-heading">${group.difficulty}</h3>
+              <div class="lab-grid">
+                ${group.tickets
+                  .map((ticket) => {
+                    const done = progress.completedTickets.includes(ticket.id);
+                    return `
+                      <article class="lab-card ticket-card ${done ? "mastered" : ""}">
+                        <div class="lab-card-top">
+                          <span>#${ticket.ticketNumber} · ${ticket.domain}</span>
+                          <strong>${done ? "Resolved ✓" : ticket.difficulty}</strong>
+                        </div>
+                        <h3>${ticket.title}</h3>
+                        <p>${ticket.scenario.length > 140 ? ticket.scenario.slice(0, 140) + "…" : ticket.scenario}</p>
+                        <div class="lab-card-footer">
+                          <span>${ticket.steps.length} decisions · reported by ${ticket.reportedBy}</span>
+                          <button class="secondary-button" data-ticket-action="launch" data-ticket="${ticket.id}" type="button">
+                            ${done ? "Work It Again" : "Open Ticket"} →
+                          </button>
+                        </div>
+                      </article>
+                    `;
+                  })
+                  .join("")}
+              </div>
+            </div>
+          `,
+        )
+        .join("")}
+    `;
+  }
+
+  function launchTicket(ticketId) {
+    const ticket = TICKETS.find((item) => item.id === ticketId);
+    if (!ticket) return;
+    state.currentTicket = ticketId;
+    state.ticketStepIndex = 0;
+    state.ticketStepAnswered = false;
+    state.ticketMistakes = 0;
+    renderTicketWorkspace();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderTicketWorkspace() {
+    const ticket = TICKETS.find((item) => item.id === state.currentTicket);
+    if (!ticket) return;
+
+    elements.ticketList.className = "ticket-workspace-shell";
+    const atResolution = state.ticketStepIndex >= ticket.steps.length;
+
+    elements.ticketList.innerHTML = `
+      <div class="simulator-toolbar">
+        <button class="text-button" data-ticket-action="back" type="button">← All tickets</button>
+        <div>
+          <span>#${ticket.ticketNumber} · ${ticket.domain} · ${ticket.difficulty}</span>
+          <strong>${ticket.title}</strong>
+        </div>
+        <span class="simulator-local-badge">REPORTED BY ${ticket.reportedBy.toUpperCase()}</span>
+      </div>
+
+      <section class="mission-card ticket-scenario-card">
+        <span class="section-kicker">Scenario</span>
+        <p>${escapeHtml(ticket.scenario)}</p>
+      </section>
+
+      <section class="ticket-evidence-card">
+        <span class="teach-label">Known evidence</span>
+        <dl class="ticket-evidence-list">
+          ${ticket.evidence
+            .map(
+              (item) => `
+                <div class="ticket-evidence-item">
+                  <dt>${escapeHtml(item.label)}</dt>
+                  <dd>${escapeHtml(item.value)}</dd>
+                </div>`,
+            )
+            .join("")}
+        </dl>
+      </section>
+
+      <div class="ticket-progress-track">
+        ${ticket.steps
+          .map(
+            (_, i) => `<span class="ticket-progress-dot ${i < state.ticketStepIndex ? "done" : i === state.ticketStepIndex ? "current" : ""}"></span>`,
+          )
+          .join("")}
+      </div>
+
+      <div id="ticket-step-area"></div>
+    `;
+
+    if (atResolution) {
+      renderTicketResolution(ticket);
+    } else {
+      renderTicketStep(ticket);
+    }
+  }
+
+  function renderTicketStep(ticket) {
+    const area = get("ticket-step-area");
+    const step = ticket.steps[state.ticketStepIndex];
+
+    area.innerHTML = `
+      <section class="ticket-step-card">
+        <span class="section-kicker">Decision ${state.ticketStepIndex + 1} of ${ticket.steps.length}</span>
+        <h2>${escapeHtml(step.prompt)}</h2>
+        <div class="ticket-step-options">
+          ${step.options
+            .map(
+              (option, i) => `
+                <button type="button" class="ticket-option" data-ticket-option="${i}">
+                  ${escapeHtml(option.label)}
+                </button>`,
+            )
+            .join("")}
+        </div>
+        <div id="ticket-step-feedback" class="ticket-step-feedback hide"></div>
+        <button id="ticket-continue-button" class="primary-button hide" type="button">Continue →</button>
+      </section>
+    `;
+
+    area.querySelectorAll(".ticket-option").forEach((button) => {
+      button.addEventListener("click", () => answerTicketStep(ticket, Number(button.dataset.ticketOption), button));
+    });
+
+    get("ticket-continue-button").addEventListener("click", () => {
+      state.ticketStepIndex += 1;
+      state.ticketStepAnswered = false;
+      renderTicketWorkspace();
+    });
+  }
+
+  function answerTicketStep(ticket, optionIndex, selectedButton) {
+    if (state.ticketStepAnswered) return;
+    state.ticketStepAnswered = true;
+
+    const step = ticket.steps[state.ticketStepIndex];
+    const option = step.options[optionIndex];
+    if (!option.correct) state.ticketMistakes += 1;
+
+    const area = get("ticket-step-area");
+    area.querySelectorAll(".ticket-option").forEach((button, i) => {
+      button.disabled = true;
+      if (step.options[i].correct) button.classList.add("correct");
+      else if (button === selectedButton) button.classList.add("wrong");
+      else button.classList.add("dimmed");
+    });
+
+    const feedback = get("ticket-step-feedback");
+    feedback.classList.remove("hide", "wrong");
+    if (!option.correct) feedback.classList.add("wrong");
+    feedback.innerHTML = `<strong>${option.correct ? "Good call." : "Not the best move."}</strong> ${escapeHtml(option.feedback)}`;
+
+    get("ticket-continue-button").classList.remove("hide");
+  }
+
+  function renderTicketResolution(ticket) {
+    const area = get("ticket-step-area");
+    const alreadyDone = progress.completedTickets.includes(ticket.id);
+
+    if (!alreadyDone) {
+      progress.completedTickets.push(ticket.id);
+      saveProgress();
+    }
+
+    area.innerHTML = `
+      <section class="ticket-resolution-card">
+        <span class="section-kicker">Resolution</span>
+        <h2>Ticket resolved${state.ticketMistakes === 0 ? " — clean run" : ""}</h2>
+        <p>${escapeHtml(ticket.resolution.summary)}</p>
+
+        <div class="ticket-resolution-block">
+          <span class="teach-label">Why the other options were wrong</span>
+          <ul>${ticket.resolution.whyOthersWrong.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        </div>
+
+        <div class="ticket-resolution-block">
+          <span class="teach-label">Skills this ticket practiced</span>
+          <div class="ticket-skills-list">
+            ${ticket.resolution.skillsInvolved.map((skill) => `<span class="ticket-skill-chip">${escapeHtml(skill)}</span>`).join("")}
+          </div>
+        </div>
+
+        <p class="ticket-journal-hint">Learned something worth remembering here? Log it in the <strong>Cloud Engineer Journal</strong> before moving on.</p>
+
+        <div class="results-actions">
+          <button class="primary-button" data-ticket-action="retry" type="button">Work It Again</button>
+          <button class="ghost-button" data-ticket-action="back" type="button">Back to All Tickets</button>
+        </div>
+      </section>
+    `;
+  }
+
+  // ---------------------------------------------------------
+  // CLOUD ENGINEER JOURNAL
+  // ---------------------------------------------------------
+
+  function loadJournalEntries() {
+    try {
+      const raw = localStorage.getItem(JOURNAL_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.warn("CloudAdmin Prep could not load journal entries.", error);
+      return [];
+    }
+  }
+
+  function saveJournalEntries(entries) {
+    try {
+      localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries));
+    } catch (error) {
+      console.warn("CloudAdmin Prep could not save journal entries.", error);
+    }
+  }
+
+  function journalEntryMarkdown(entry) {
+    return [
+      `### ${entry.title}`,
+      "",
+      `**Problem:** ${entry.problem}`,
+      `**Environment:** ${entry.environment}`,
+      `**Action:** ${entry.action}`,
+      `**Validation:** ${entry.validation}`,
+      `**Lessons learned:** ${entry.lessons}`,
+    ].join("\n");
+  }
+
+  function renderJournal() {
+    const entries = loadJournalEntries();
+    if (!entries.length) {
+      elements.journalEntryList.innerHTML = `
+        <p class="journal-empty-state">No journal entries yet. Finish a lab or a Work Simulator ticket, then capture what you did above — this is the raw material for interview stories and a portfolio.</p>
+      `;
+      return;
+    }
+
+    elements.journalEntryList.innerHTML = entries
+      .slice()
+      .reverse()
+      .map(
+        (entry) => `
+          <article class="journal-entry-card" data-journal-id="${entry.id}">
+            <div class="journal-entry-heading">
+              <div>
+                <span>${new Date(entry.date).toLocaleDateString()}</span>
+                <strong>${escapeHtml(entry.title)}</strong>
+              </div>
+              <div class="journal-entry-actions">
+                <button class="ghost-button" data-journal-action="copy" type="button">Copy as Markdown</button>
+                <button class="text-button" data-journal-action="delete" type="button">Delete</button>
+              </div>
+            </div>
+            <dl class="journal-entry-body">
+              <dt>Problem</dt><dd>${escapeHtml(entry.problem)}</dd>
+              <dt>Environment</dt><dd>${escapeHtml(entry.environment)}</dd>
+              <dt>Action</dt><dd>${escapeHtml(entry.action)}</dd>
+              <dt>Validation</dt><dd>${escapeHtml(entry.validation)}</dd>
+              <dt>Lessons learned</dt><dd>${escapeHtml(entry.lessons)}</dd>
+            </dl>
+          </article>
+        `,
+      )
+      .join("");
+  }
+
+  // ---------------------------------------------------------
   // NAVIGATION AND EVENT WIRING
   // ---------------------------------------------------------
 
@@ -1509,6 +1908,8 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       if (button.dataset.screen === "labs-screen") renderLabs();
       if (button.dataset.screen === "weak-screen") renderWeakAreas();
+      if (button.dataset.screen === "simulator-screen") renderTicketList();
+      if (button.dataset.screen === "journal-screen") renderJournal();
       showScreen(button.dataset.screen);
     });
   });
@@ -1536,6 +1937,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (action === "weak") {
         renderWeakAreas();
         showScreen("weak-screen");
+      }
+      if (action === "netfund") openStudy("netfund-what-is-a-network");
+      if (action === "automation") openStudy("automation-powershell-fundamentals");
+      if (action === "simulator") {
+        renderTicketList();
+        showScreen("simulator-screen");
       }
     });
   });
@@ -1674,6 +2081,65 @@ document.addEventListener("DOMContentLoaded", () => {
     showScreen("practice-screen");
   });
 
+  elements.ticketList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-ticket-action]");
+    if (!button) return;
+    const action = button.dataset.ticketAction;
+    if (action === "launch") launchTicket(button.dataset.ticket);
+    if (action === "back") renderTicketList();
+    if (action === "retry") launchTicket(state.currentTicket);
+  });
+
+  elements.journalForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const entry = {
+      id: `journal-${Date.now()}`,
+      date: new Date().toISOString(),
+      title: elements.journalTitle.value.trim(),
+      problem: elements.journalProblem.value.trim(),
+      environment: elements.journalEnvironment.value.trim(),
+      action: elements.journalAction.value.trim(),
+      validation: elements.journalValidation.value.trim(),
+      lessons: elements.journalLessons.value.trim(),
+    };
+    if (!entry.title) return;
+
+    const entries = loadJournalEntries();
+    entries.push(entry);
+    saveJournalEntries(entries);
+    elements.journalForm.reset();
+    renderJournal();
+    showToast("Journal entry saved.");
+  });
+
+  elements.journalEntryList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-journal-action]");
+    if (!button) return;
+    const card = button.closest("[data-journal-id]");
+    const id = card?.dataset.journalId;
+    const entries = loadJournalEntries();
+    const entry = entries.find((item) => item.id === id);
+    if (!entry) return;
+
+    if (button.dataset.journalAction === "copy") {
+      const markdown = journalEntryMarkdown(entry);
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard
+          .writeText(markdown)
+          .then(() => showToast("Copied entry as Markdown."))
+          .catch(() => showToast("Could not copy — your browser may block clipboard access."));
+      } else {
+        showToast("Clipboard access isn't available in this browser.");
+      }
+    }
+
+    if (button.dataset.journalAction === "delete") {
+      saveJournalEntries(entries.filter((item) => item.id !== id));
+      renderJournal();
+      showToast("Journal entry deleted.");
+    }
+  });
+
   document.addEventListener("keydown", (event) => {
     if (get("quiz-screen").classList.contains("hide")) return;
     if (!state.answered && ["1", "2", "3", "4"].includes(event.key)) {
@@ -1698,9 +2164,11 @@ document.addEventListener("DOMContentLoaded", () => {
   syncPracticeButtons();
   renderLabs();
   renderWeakAreas();
+  renderTicketList();
+  renderJournal();
   showScreen("home-screen");
 
   console.log(
-    `CloudAdmin Prep v3.0 initialized: ${LESSONS.length} lessons, ${QUESTIONS.length} questions, ${LABS.length} simulator labs.`,
+    `CloudAdmin Prep v4.0 initialized: ${LESSONS.length} lessons, ${QUESTIONS.length} questions, ${LABS.length} simulator labs, ${TICKETS.length} work-simulator tickets.`,
   );
 });
