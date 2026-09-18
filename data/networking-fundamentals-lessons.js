@@ -65,7 +65,7 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "A device can have multiple NICs (e.g., a server with wired and wireless adapters, or a VM with multiple virtual NICs) — each one gets its own MAC and can get its own IP.",
     ],
     remember: "LAN = one place. WAN = connected places. NIC = the door a device uses to get on the network. MAC = the door's serial number. IP = the door's mailing address.",
-    relatedLab: "netfund-lab-trace-a-packet",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Your company's three office buildings, each with their own internal network, are connected together over the internet. What best describes the result?",
@@ -187,7 +187,7 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "Two devices with the same network ID but different masks might actually be on different networks — always check the mask, not just the numbers.",
     ],
     remember: "Network ID = the network's own name (host bits all zero). Broadcast = talk to everyone (host bits all one). Everything else in between is a usable host address.",
-    relatedLab: "netfund-lab-subnet-a-small-office",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "For the network 10.0.5.0/24, what is the broadcast address?",
@@ -250,7 +250,7 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "The usable host count is always (2 to the power of host bits) minus 2 — for a /30, that's 2^2 - 2 = 2, not 4.",
     ],
     remember: "Block size doubles every time the prefix number goes down by one. Find the block size, find the boundary the address falls on, and the network ID, broadcast, and usable range all follow.",
-    relatedLab: "netfund-lab-subnet-a-small-office",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "What is the block size (total addresses per subnet) of a /27?",
@@ -286,6 +286,7 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "To split a block into 4 equal subnets, borrow 2 bits (since 2^2 = 4) — a /16 split 4 ways becomes four /18 blocks.",
       "To split a block into 8 equal subnets, borrow 3 bits (2^3 = 8) — a /24 split 8 ways becomes eight /27 blocks.",
       "Always double-check your answer by re-deriving the network ID and broadcast address of your new subnet using the Part 1 method.",
+      "When a scenario mentions expected future growth (not just today's headcount), size for the larger future number, not the current one — picking a subnet that's already full on day one just creates a re-addressing problem later.",
     ],
     scenario: "You need a subnet for a department with 45 employees, plus 3 network devices — 48 hosts total. 48 + 2 = 50 minimum addresses. A /27 (30 usable) is too small; a /26 (62 usable) fits with room to grow.",
     realWorldExample:
@@ -299,6 +300,7 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "Forgetting to add 2 to a host requirement before picking a CIDR size, resulting in a subnet that's exactly too small.",
       "Rounding a host count down instead of up when nothing else fits exactly (e.g., treating a need for 130 hosts as fitting a /25's 126 usable addresses — it doesn't; a /24 is required).",
       "Miscounting how many bits to borrow for equal-size subnetting — always check that 2^(borrowed bits) equals the exact number of subnets needed.",
+      "Sizing exactly to today's headcount when the scenario tells you the team is expected to grow — the next-larger block is usually cheap in address space and saves a painful re-addressing project later.",
     ],
     traps: [
       "\"Enough addresses for 100 devices\" always means 100 usable addresses, not 100 total addresses including network ID and broadcast.",
@@ -809,10 +811,12 @@ const NETWORKING_FUNDAMENTALS_LESSONS = [
       "Assuming a VPN is a special separate physical network — it's actually still traveling over the regular public internet, just encrypted.",
       "Using a site-to-site VPN design for a problem that's really about individual remote users (point-to-site fits better), or vice versa.",
       "Forgetting that VPN performance is still subject to the underlying public internet's congestion and reliability, since no new dedicated path is created.",
+      "Assuming a VPN tunnel by itself guarantees the two sides can actually talk — if both networks use overlapping IP address ranges (for example, both using 192.168.1.0/24), traffic can't be routed correctly across the tunnel even though the tunnel itself is up.",
     ],
     traps: [
       "A working VPN tunnel does not automatically mean every device on both sides can reach every other device — routing and firewall/NSG rules still apply on top of the VPN connection.",
       "VPN and 'private network' are not the same claim as 'fast' or 'guaranteed bandwidth' — it rides on the shared public internet underneath.",
+      "The tunnel showing 'connected' does not mean traffic will flow — overlapping address spaces on the two sides is a classic cause of a VPN that connects but never passes traffic (the same underlying problem that breaks VNet peering).",
     ],
     remember: "Site-to-site VPN connects two whole networks. Point-to-site VPN connects one device into a network. Both encrypt traffic across the public internet using IPsec, rather than requiring new dedicated physical lines.",
     relatedLab: null,

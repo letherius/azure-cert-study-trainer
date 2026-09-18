@@ -68,7 +68,7 @@ const AUTOMATION_LESSONS = [
       "You don't need to memorize every cmdlet — you need to recognize the pattern (Get/New/Set/Remove) and reason out what an unfamiliar one probably does.",
     ],
     remember: "PowerShell hands you objects, not text. Get- reads, New- creates, Set- changes, Remove- deletes. Where-Object filters, ForEach-Object repeats, try/catch protects against a mid-script failure.",
-    relatedLab: "automation-lab-read-the-script",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which cmdlet verb would you expect to retrieve existing data without changing anything?",
@@ -132,7 +132,7 @@ const AUTOMATION_LESSONS = [
       "AZ-104 more often tests whether you recognize what a CLI command is trying to do than whether you can write one from memory — focus on reading fluency over memorization.",
     ],
     remember: "az <service> <resource> <action> is the pattern behind almost every command. --help teaches you the next part. --query reshapes output. -o table makes it readable. az find helps when you don't know where to start.",
-    relatedLab: "automation-lab-read-the-script",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "What does appending --help to a partial Azure CLI command do?",
@@ -199,7 +199,7 @@ const AUTOMATION_LESSONS = [
       "JSON's true/false/null are lowercase; Python's equivalents (True/False/None) are capitalized — the json module handles this conversion for you automatically, but hand-writing Python data literally requires the capitalized versions.",
     ],
     remember: "You need variables, if/else, loops, functions, and JSON handling to be productive — not a computer science degree. Python talks to the same Azure REST API that CLI and PowerShell use under the hood.",
-    relatedLab: null,
+    relatedLab: "automation-lab-read-the-script",
     knowledgeCheck: [
       {
         question: "What defines a block of code in Python (instead of curly braces)?",
@@ -257,7 +257,7 @@ const AUTOMATION_LESSONS = [
       "Bicep files are never deployed directly by Azure — they are always compiled to ARM JSON first, even though you never have to see that JSON yourself.",
     ],
     remember: "IaC describes desired end state (declarative), not steps (imperative). Terraform tracks state itself, across any cloud. Bicep/ARM are Azure-specific and rely on Azure's own state. Parameters make templates reusable; outputs return useful values after deployment.",
-    relatedLab: "automation-lab-order-the-pipeline",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "What does \"declarative\" mean in the context of Infrastructure as Code?",
@@ -388,7 +388,7 @@ const AUTOMATION_LESSONS = [
       "git push does not automatically mean your change has been approved or deployed — it typically still needs to go through a pull request and review process for infrastructure code.",
     ],
     remember: "Branch to isolate work. Commit with a message explaining why. Push to share. Pull request to get review before merging into main. .gitignore to keep secrets out of the repository entirely.",
-    relatedLab: "automation-lab-order-the-pipeline",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which of these is the better commit message?",

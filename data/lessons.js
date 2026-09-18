@@ -665,11 +665,13 @@ const AZ104_TRACK_LESSONS = [
       "Assuming a role assigned at a lower scope \"overrides\" a broader one from a higher scope — in Azure RBAC, assignments add together instead of one replacing the other.",
       "Granting Contributor at a broad scope when only a narrow, service-specific data role was actually required.",
       "Forgetting that Contributor cannot assign roles, and reaching for Owner by default instead of adding a User Access Administrator assignment for that one need.",
+      "Expecting a brand-new role assignment to take effect instantly and assuming it \"isn't working\" a few seconds after saving it — RBAC assignments typically take a few minutes to propagate before the new access is usable.",
     ],
     traps: [
       "Contributor is powerful but is not the same as Owner.",
       "Reader can view configuration but cannot modify resources.",
       "A broad subscription assignment may violate least privilege if access is needed to one resource.",
+      "A user reporting \"access denied\" immediately after being assigned a role does not automatically mean the assignment is wrong — propagation delay (typically a few minutes) is a common, entirely normal first explanation to rule out.",
     ],
     examTips: [
       "If a question describes a role at one scope and a different role at a child scope, remember the effective access inside the child scope is the union of both — not whichever was assigned more recently.",
@@ -750,7 +752,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Enforce a standard on every resource going forward\" is Azure Policy — not RBAC and not a lock.",
     ],
     remember: "Policy = rules. RBAC = permissions. Locks = protection. Tags = labels.",
-    relatedLab: "lab-governance",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which tool blocks deletion but still allows configuration changes?",
@@ -821,7 +823,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Recommend cost savings based on actual usage\" is a strong signal for Azure Advisor.",
     ],
     remember: "Cost questions usually point to Cost Management, budgets, alerts, or Advisor — not RBAC.",
-    relatedLab: null,
+    relatedLab: "lab-governance",
     knowledgeCheck: [
       {
         question: "Does a Cost Management budget automatically shut down resources when exceeded?",
@@ -1125,7 +1127,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Rarely accessed, tolerant of a retrieval delay\" is Archive; \"infrequently accessed but must stay instantly readable\" is Cool/Cold.",
     ],
     remember: "Tier questions are about access frequency, retrieval time, and cost tradeoffs. Soft-delete questions are about which level — blob or container — needs its own protection.",
-    relatedLab: "lab-blob-lifecycle",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which tier requires rehydration before a blob can be read normally?",
@@ -1199,7 +1201,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Point-in-time copy of a share I can restore from\" is a snapshot; \"recover an entire deleted share\" is soft delete.",
     ],
     remember: "For an accidentally deleted file share, look for Azure Files soft delete. For point-in-time share state, think snapshot.",
-    relatedLab: "lab-blob-lifecycle",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Does enabling blob soft delete protect an Azure file share from accidental deletion?",
@@ -1381,6 +1383,8 @@ const AZ104_TRACK_LESSONS = [
       { term: "VM size", definition: "The hardware profile of a VM — vCPU count, memory, temporary storage, and supported features." },
       { term: "Image", definition: "The starting OS (and sometimes preinstalled software) a VM is created from — a marketplace image, a custom image, or a shared image." },
       { term: "SSH key pair", definition: "A public/private key pair used for secure, passwordless authentication to Linux VMs (and supported on Windows)." },
+      { term: "Availability zone (at VM creation)", definition: "On the Basics tab of VM creation, a physically separate datacenter (within the same region) you can pin the VM to, so a single datacenter failure doesn't take it down. This lesson covers it as a creation-time choice; the dedicated availability lesson later covers zones, sets, and scale sets in full depth." },
+      { term: "Azure Bastion (at VM creation)", definition: "The recommended way to give a production VM admin (RDP/SSH) access without ever giving that VM a public IP — you connect through the Azure portal instead. This lesson introduces it as the default secure choice at creation time; the dedicated secure-access lesson later covers Bastion alongside service endpoints and private endpoints in full depth." },
     ],
     points: [
       "VM size determines vCPU, memory, temporary storage, and supported capabilities.",
@@ -1388,16 +1392,21 @@ const AZ104_TRACK_LESSONS = [
       "Images provide operating-system and sometimes application configurations.",
       "Use SSH keys for Linux or strong secure authentication methods as appropriate.",
       "A VM is IaaS, so you are responsible for the guest OS configuration and patching.",
+      "The Basics tab of VM creation also asks about availability: pin the VM to an availability zone when the requirement is resilience against a whole-datacenter failure within the region. (A later lesson covers zones versus availability sets versus scale sets in full depth — for now, know that \"zone-level separation\" at VM creation means picking an availability zone.)",
+      "The Networking tab of VM creation also decides how the VM will be administered: skipping the public IP and planning to connect through Azure Bastion is the standard secure pattern for a production VM, instead of exposing RDP/SSH directly to the internet. (A later lesson covers Bastion alongside service endpoints and private endpoints in full depth — for now, know that \"no public IP, admin access through the portal\" at VM creation means Azure Bastion.)",
     ],
     distinctions: [
       { a: "Scale up", b: "Scale out", note: "Resizing a VM to a larger size is scaling up (vertical). Adding more VM instances, typically via a scale set, is scaling out (horizontal)." },
+      { a: "Availability zone", b: "No infrastructure redundancy", note: "Choosing an availability zone at VM creation places the VM in one of a region's physically separate datacenters, protecting against a single-datacenter failure. Choosing no redundancy accepts that risk — appropriate only for genuinely non-critical workloads." },
+      { a: "Azure Bastion", b: "A public IP with open RDP/SSH", note: "Bastion gives administrators a managed, browser-based path to a VM with no public IP on the VM at all. Putting a public IP on the VM and opening RDP/SSH to it directly exposes that VM to internet-wide scanning and brute-force attempts — the pattern Bastion exists to avoid." },
     ],
-    scenario: "A workload needs more RAM but no architecture change. Resize the VM to a supported size rather than deploying an App Service plan.",
-    realWorldExample: "An administrator provisions a new Linux VM for a small internal tool: a B-series burstable size (sufficient for light, intermittent load), an Ubuntu marketplace image, an SSH key pair for authentication instead of a password, and a managed OS disk — then, six months later when usage grows, resizes it up one tier in the same VM series rather than rebuilding it from scratch.",
+    scenario: "A workload needs more RAM but no architecture change. Resize the VM to a supported size rather than deploying an App Service plan. A separate production VM needs to survive a single datacenter going down and must never expose RDP/SSH to the internet — at creation time, that means picking an availability zone and planning for Azure Bastion instead of a public IP.",
+    realWorldExample: "An administrator provisions a new Linux VM for a small internal tool: a B-series burstable size (sufficient for light, intermittent load), an Ubuntu marketplace image, an SSH key pair for authentication instead of a password, and a managed OS disk — then, six months later when usage grows, resizes it up one tier in the same VM series rather than rebuilding it from scratch. For a production customer-facing VM, that same administrator instead pins it to an availability zone for datacenter-level resilience, skips the public IP entirely, and connects for administration exclusively through Azure Bastion.",
     portalPath: "Azure portal → Virtual machines",
     portalSteps: [
       "Search for and open \"Virtual machines\" → + Create → Azure virtual machine.",
-      "On Basics, choose the image, size, and authentication type (SSH public key for Linux, or password/key for Windows).",
+      "On Basics, choose the image, size, authentication type (SSH public key for Linux, or password/key for Windows), and — if the VM needs to survive a single datacenter failure — an availability zone.",
+      "On Networking, skip creating a public IP for a production VM and plan to administer it through Azure Bastion instead of exposing RDP/SSH directly.",
       "Review Disks, Networking, and Management tabs for defaults before selecting Review + create.",
       "To resize later, open the VM → Size, and choose from sizes available in that region/series.",
     ],
@@ -1412,18 +1421,23 @@ const AZ104_TRACK_LESSONS = [
       "Choosing an oversized VM \"just in case\" instead of sizing to the actual workload and resizing later if needed.",
       "Stopping a VM from inside the guest OS and assuming that stops billing — deallocation (from Azure, not the OS) is what stops compute billing.",
       "Forgetting that the VM, its NIC, disks, and public IP are separate resources that can each be managed (and cleaned up) independently.",
+      "Skipping the availability zone choice on a production VM because it \"seems fine without it\" — a scenario that explicitly calls for surviving a datacenter failure requires an availability zone (or, for many VMs behind a load balancer, an availability set/scale set) chosen at creation.",
+      "Giving a VM a public IP and opening RDP/SSH to it directly \"to make admin access simple\" instead of planning for Azure Bastion — this is one of the most commonly tested \"insecure default\" traps.",
     ],
     traps: [
       "Stopping a VM inside the OS may not deallocate compute billing.",
       "A larger VM is not always the correct answer; requirements drive sizing.",
       "The VM resource, NIC, disks, and public IP are separate Azure resources.",
+      "\"Must survive a single datacenter failure\" at VM creation time points to an availability zone, not just a bigger VM size.",
+      "\"No public IP on the VM, admin access through the portal\" at VM creation time points to Azure Bastion, not a firewall rule on a public IP.",
     ],
     examTips: [
       "\"Needs more CPU/RAM, same VM\" points to a resize (scale up); \"needs more capacity via more machines\" points to a scale set (scale out).",
       "Remember a VM is IaaS — if a scenario wants zero OS-patching responsibility, a VM is the wrong answer regardless of size.",
+      "At VM creation, \"zone-level separation\" and \"no public IP, portal-based admin access\" are two of the most frequently tested Basics/Networking-tab decisions — availability zone and Azure Bastion, respectively.",
     ],
-    remember: "VM questions often hide the answer in CPU, memory, disk, availability, or management responsibility.",
-    relatedLab: "lab-vm",
+    remember: "VM questions often hide the answer in CPU, memory, disk, availability, or management responsibility. Zone-level resilience = availability zone. No public IP + portal admin access = Azure Bastion.",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Does stopping a VM from inside its guest operating system stop compute billing?",
@@ -1436,6 +1450,12 @@ const AZ104_TRACK_LESSONS = [
         options: ["Resize the VM to a larger size", "Deploy a VM Scale Set"],
         answer: "Resize the VM to a larger size",
         explanation: "This is a scale-up (vertical) need, not a scale-out (more instances) need.",
+      },
+      {
+        question: "A production VM must survive a single datacenter failure and must never expose RDP/SSH to the internet. What two creation-time choices fit?",
+        options: ["An availability zone, and Azure Bastion with no public IP", "A bigger VM size, and a public IP with an NSG rule"],
+        answer: "An availability zone, and Azure Bastion with no public IP",
+        explanation: "Datacenter-level resilience is what an availability zone provides; secure admin access without exposing the VM directly is what Azure Bastion provides.",
       },
     ],
   },
@@ -1497,7 +1517,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Protect data even on temporary disk/cache\" is the specific phrase that points to encryption at host.",
     ],
     remember: "Always distinguish a logical move (resource group/subscription) from a geographic move (region) — they use different tools entirely.",
-    relatedLab: null,
+    relatedLab: "lab-vm",
     knowledgeCheck: [
       {
         question: "Does moving a VM to another resource group in the same region relocate its underlying compute?",
@@ -1968,6 +1988,7 @@ const AZ104_TRACK_LESSONS = [
       { term: "Public IP address", definition: "An internet-reachable IP address that can be assigned to resources like VMs or load balancers." },
       { term: "User-defined route (UDR)", definition: "A custom route added to a route table, overriding Azure's default system routes for matching traffic." },
       { term: "Next hop", definition: "The destination a route sends matching traffic to next — the internet, a virtual appliance, another VNet, and so on." },
+      { term: "Hub-and-spoke topology", definition: "A common network design pattern where a central \"hub\" VNet (holding shared services like a firewall appliance or VPN gateway) is peered to multiple \"spoke\" VNets — the pattern this lesson's real-world example uses." },
     ],
     points: [
       "VNet peering provides low-latency private connectivity between VNets.",
@@ -1975,6 +1996,7 @@ const AZ104_TRACK_LESSONS = [
       "Public IP SKUs and allocation behavior affect supported scenarios.",
       "User-defined routes can send traffic through a network virtual appliance.",
       "Route tables are associated with subnets.",
+      "The route-through-an-appliance pattern isn't only for outbound-to-internet traffic — in a hub-and-spoke design, the exact same technique (a UDR sending traffic to the hub appliance's private IP as next hop) is also how spoke-to-spoke traffic gets inspected, since peering alone won't route spoke A's traffic to spoke B.",
     ],
     distinctions: [
       { a: "VNet peering", b: "VPN/ExpressRoute", note: "Peering connects two Azure VNets directly over Microsoft's backbone. VPN and ExpressRoute instead connect Azure to an on-premises network — a different connectivity scenario entirely." },
@@ -2082,7 +2104,7 @@ const AZ104_TRACK_LESSONS = [
       "\"Effective\" in a tool's name (effective routes, effective security rules) means combined/actual behavior, not just one layer's configuration.",
     ],
     remember: "DNS, then route, then security, then destination. Use that order.",
-    relatedLab: "lab-nsg-route",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "After confirming DNS and routing are correct, what should you check next for a blocked connection?",
@@ -2185,6 +2207,8 @@ const AZ104_TRACK_LESSONS = [
       { term: "Service endpoint", definition: "Extends a VNet's identity to a PaaS service's public endpoint, restricting access to selected subnets while the service stays on its public IP." },
       { term: "Private endpoint", definition: "Uses Azure Private Link to give a PaaS resource an actual private IP address inside your VNet." },
       { term: "Private DNS zone", definition: "Often required alongside a private endpoint so clients resolve the service's name to the private IP instead of the public one." },
+      { term: "Azure DNS Private Resolver", definition: "A managed service that lets on-premises DNS servers forward queries for Azure private DNS zone names into a VNet, and can also forward the other direction — the standard way to make private-endpoint names resolvable from outside Azure." },
+      { term: "Conditional forwarding", definition: "Configuring a DNS server to send queries for a specific domain (rather than all queries) to a different DNS server — the mechanism an on-premises DNS server uses to hand off Azure-specific names toward Azure DNS." },
     ],
     points: [
       "Azure Bastion is managed RDP/SSH connectivity through the Azure portal/client features without a public IP on the VM.",
@@ -2192,6 +2216,8 @@ const AZ104_TRACK_LESSONS = [
       "Private endpoints use Azure Private Link and a private IP from your VNet.",
       "Private DNS often matters so service names resolve to private endpoint addresses.",
       "Network controls still need correct authorization at the target service.",
+      "A private endpoint's private DNS zone only resolves correctly for clients already inside Azure (or using a VNet's default DNS) by default — an on-premises client, over a VPN or ExpressRoute connection, needs its own DNS server configured with conditional forwarding toward an Azure DNS Private Resolver before it can resolve that same private endpoint name to its private IP.",
+      "Bastion removes the need for a public IP on the target VM, but it does not bypass NSG rules — Bastion still connects to the VM over its private IP like any other traffic, so the VM's (or its subnet's) NSG must have an inbound rule allowing RDP (3389) or SSH (22) from the AzureBastionSubnet range, or the connection will still fail.",
     ],
     distinctions: [
       { a: "Service endpoint", b: "Private endpoint", note: "A service endpoint secures a path to the service's public endpoint from selected subnets — the service keeps its public IP. A private endpoint instead assigns the service an actual private IP inside your VNet." },
@@ -2217,18 +2243,22 @@ const AZ104_TRACK_LESSONS = [
       "Assuming a service endpoint gives the PaaS resource a private IP — it does not; a private endpoint is required for that.",
       "Forgetting to update private DNS after adding a private endpoint, leaving clients still resolving to the public endpoint.",
       "Provisioning a traditional jump-box VM with a public IP when Bastion would remove both the public exposure and the OS-patching burden.",
+      "Assuming a private endpoint's DNS \"just works\" for on-premises users the same way it does inside Azure — an on-premises client needs its own DNS server pointed at an Azure DNS Private Resolver (via conditional forwarding) for that resolution to succeed over the hybrid connection.",
+      "Assuming Bastion connectivity means NSG rules no longer apply to the target VM — a missing or recently-removed inbound RDP/SSH rule from the Bastion subnet will still block the connection even though Bastion itself is working correctly.",
     ],
     traps: [
       "Service endpoint and private endpoint are not the same.",
       "Bastion is for administration access, not general application load balancing.",
       "A private endpoint does not itself grant RBAC/data permissions.",
+      "\"The private endpoint resolves fine from a VM in the VNet but not from an on-premises PC over VPN\" is a hybrid DNS forwarding problem, not a broken private endpoint — the fix is conditional forwarding on the on-premises DNS server toward an Azure DNS Private Resolver, not recreating the endpoint.",
+      "\"Bastion is deployed and healthy, but RDP to a specific VM still fails\" almost always means the target VM's NSG is missing (or lost) its inbound rule allowing RDP/SSH from the AzureBastionSubnet — check that rule before assuming Bastion itself is broken.",
     ],
     examTips: [
       "\"No public IP on the VM, admin access through the portal\" always points to Bastion.",
       "\"Private IP inside the VNet\" always points to a private endpoint; \"secured path to the public endpoint from selected subnets\" always points to a service endpoint.",
     ],
     remember: "Private endpoint equals private IP. Service endpoint equals a secured VNet path to the public service endpoint.",
-    relatedLab: "lab-private-loadbalancer",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which service lets you RDP/SSH into a VM with no public IP on the VM?",
@@ -2381,7 +2411,7 @@ const AZ104_TRACK_LESSONS = [
       "If logs \"aren't showing up\" in a workspace that already exists, the missing piece is almost always the resource's diagnostic setting.",
     ],
     remember: "Numbers over time equal metrics. Detailed searchable records equal logs.",
-    relatedLab: "lab-monitor",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which is best for detailed, searchable event records, such as investigating every failed request?",
@@ -2600,7 +2630,7 @@ const AZ104_TRACK_LESSONS = [
       "\"The vault exists but nothing is backed up\" is a direct signal that protection was never explicitly enabled for the workload.",
     ],
     remember: "The vault holds protection. The policy defines schedule and retention. Restore proves recovery. Recovery Services vault and Backup vault are two different resource types.",
-    relatedLab: "lab-backup-asr",
+    relatedLab: null,
     knowledgeCheck: [
       {
         question: "Which vault type is used to back up Azure VMs and support Site Recovery?",

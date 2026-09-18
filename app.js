@@ -875,16 +875,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let pool;
 
     if (lessonId) {
-      const lesson = LESSONS.find((item) => item.id === lessonId);
-      const direct = shuffle(
+      // A Lesson Check may only test material taught in THIS lesson —
+      // never pad with questions from other lessons in the same topic,
+      // even if that means a shorter check for a lesson with few
+      // dedicated questions. Mixed/topic practice and the exam
+      // simulation are the intentional places for cross-lesson pools.
+      pool = shuffle(
         QUESTIONS.filter((item) => item.lessonId === lessonId),
-      );
-      const fill = shuffle(
-        QUESTIONS.filter(
-          (item) => item.topic === lesson.topic && item.lessonId !== lessonId,
-        ),
-      );
-      pool = [...direct, ...fill].slice(0, 5);
+      ).slice(0, 5);
     } else if (
       state.practiceSettings.mode === "exam" &&
       state.practiceSettings.topic === "mixed"
